@@ -1,24 +1,208 @@
-﻿<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS, and JavaScript.</p>
-    <p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="tableBlock"></div>
+<div id="editBlock">
+    <p><b>Редактирование контрагента</b></p>
+    <table>
+        <tr><td><input type="hidden" id="editId" /></td><td></td></tr>
+        <tr><td><label>Название: </label></td><td><input type="text" id="editName" /></td></tr>
+        <tr><td><label>ИНН: </label></td><td><input type="text" id="editInn" /></td></tr>
+        <tr><td><label>Расчетный счет: </label></td><td><input type="text" id="editAccount" /></td></tr>
+        <tr><td><label>Наименование банка: </label></td><td><input type="text" id="editBankName" /></td></tr>
+        <tr><td><label>Город банка: </label></td><td><input type="text" id="editBankCity" /></td></tr>
+    </table>
+    <button id="editKontrAgent">Сохранить</button>
 </div>
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>ASP.NET Web API is a framework that makes it easy to build HTTP services that reach
-        a broad range of clients, including browsers and mobile devices. ASP.NET Web API
-        is an ideal platform for building RESTful applications on the .NET Framework.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301870">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301871">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301872">Learn more &raquo;</a></p>
-    </div>
+<div id="createBlock">
+    <p><b>Добавление контрагента</b></p>
+    <table>
+        <tr><td><label>Название: </label></td><td><input type="text" id="addName" /></td></tr>
+        <tr><td><label>ИНН: </label></td><td><input type="text" id="addInn" /></td></tr>
+        <tr><td><label>Расчетный счет: </label></td><td><input type="text" id="addAccount" /></td></tr>
+        <tr><td><label>Наименование банка: </label></td><td><input type="text" id="addBankName" /></td></tr>
+        <tr><td><label>Город банка: </label></td><td><input type="text" id="addBankCity" /></td></tr>
+    </table>
+    <button id="addKontrAgent">Сохранить</button>
 </div>
+
+@section scripts
+{
+    <script type="text/javascript">
+    $(document).ready(function () {
+
+        GetKontrAgents(); //получаем список контрагентов
+
+        $("#editKontrAgent").click(function (event) {
+            event.preventDefault();
+            EditKontrAgent(); //переходим к редактированию
+        });
+
+        $("#addKontrAgent").click(function (event) {
+            event.preventDefault();
+            AddKontrAgent(); //переходим к добавлению
+        });
+
+    });
+
+    //получение всех контрагентов
+    function GetKontrAgents() {
+
+        $("#createBlock").css('display', 'block'); //изначально скрываем блок редактирования, показваем только блок добавления 
+        $("#editBlock").css('display', 'none');
+        $.ajax({
+            url: '/api/kontragents',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                WriteResponse(data); //в случае успеха выводим таблицу с данными
+            },
+            error: function (x, y, z) {
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+    }
+
+    //вывод полученных данных о контрагентах на экран в виде таблицы
+    function WriteResponse(kontrAgents) {
+        var strResult = "<table><th>ID</th><th>Название</th><th>ИНН</th><th>Расчетный счет</th><th>Название банка</th><th>Город банка</th>";
+        $.each(kontrAgents, function (index, kontrAgent) {
+            strResult += "<tr><td>" + kontrAgent.Id + "</td><td> " + kontrAgent.Name + "</td><td>" +
+            kontrAgent.Inn + "</td><td>" + kontrAgent.Account + "</td><td>" + kontrAgent.BankName + "</td><td>" + kontrAgent.BankCity +
+            "</td><td><a id='editItem' data-item='" + kontrAgent.Id + "' onclick='EditItem(this);' >Редактировать</a></td>" +
+            "<td><a id='delItem' data-item='" + kontrAgent.Id + "' onclick='DeleteItem(this);' >Удалить</a></td></tr>";
+        });
+        strResult += "</table>";
+        $("#tableBlock").html(strResult);
+    }   
+    
+    //обработчик выбора удаления напротив контрагента в таблице
+    function DeleteItem(el)
+    {
+        //получаем id удаляемого объекта
+        var id = $(el).attr('data-item');
+        //удаляем из БД по идентификатору
+        DeleteKontrAgent(id);
+    }
+
+    //удаление контрагента из базы по идентификатору
+    function DeleteKontrAgent(id)
+    {
+        $.ajax({
+            url: '/api/kontragents/' + id,
+            type: 'DELETE',
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                GetKontrAgents(); //в случае успеха обновляем список
+            },
+            error: function (x, y, z) {
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+    }
+
+    //обработчик выбора редактирования напротив контрагента в таблице
+    function EditItem(el)
+    {
+        //получаем id редактируемого объекта
+        var id = $(el).attr('data-item');
+        //запрашиваем данные в БД для их отображения на форме
+        GetKontrAgent(id);
+    }
+
+    //запрос данных контрагента по идентификатору для дальнейшего редактирования
+    function GetKontrAgent(id)
+    {
+        $.ajax({
+            url: '/api/kontragents/' + id,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                ShowKontrAgent(data); //в случае успеха выводим данные в карту контрагента
+            },
+            error: function (x, y, z) {
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+    }
+
+    //вывод данных редактируемого контрагента в поля для редактирования
+    function ShowKontrAgent(kontrAgent)
+    {
+        if (kontrAgent != null)
+        {
+            $("#createBlock").css('display', 'none'); //скрываем блок добавления и отображаем блок редактирования
+            $("#editBlock").css('display', 'block');
+
+            //выводим все данные на форму
+            $("#editId").val(kontrAgent.Id);
+            $("#editInn").val(kontrAgent.Inn);
+            $("#editAccount").val(kontrAgent.Account);
+            $("#editName").val(kontrAgent.Name);
+            $("#editBankName").val(kontrAgent.BankName);
+            $("#editBankCity").val(kontrAgent.BankCity);
+        }
+        else
+        {
+            alert("Такой контрагент не существует");
+        }
+    }
+
+    //добавление нового контрагента в базу путем нажатия "Сохранить" в карте контрагента  (в случае активности блока добавления)
+    function AddKontrAgent()
+    {
+        //получаем значения для добавляемого контрагента
+        var kontrAgent =
+        {
+            Name: $('#addName').val(),
+            Inn: $('#addInn').val(),
+            Account: $('#addAccount').val(),
+            BankName: $('#addBankName').val(),
+            BankCity: $('#addBankCity').val()
+        };
+
+        $.ajax({
+            url: '/api/kontragents',
+            type: 'POST',
+            data: JSON.stringify(kontrAgent),
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                GetKontrAgents(); //в случае успеха обновляем список
+            },
+            error: function (x, y, z) {
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+    }
+
+    //обновление данных контрагента в базе путем нажатия "Сохранить" в карте контрагента (в случае активности блока редактирования)
+    function EditKontrAgent()
+    {
+        var id = $('#editId').val();
+
+        //получаем новые значения для редактируемого контрагента
+        var kontrAgent = {
+            Id: $('#editId').val(),
+            Name: $('#editName').val(),
+            Inn: $('#editInn').val(),
+            Account: $('#editAccount').val(),
+            BankName: $('#editBankName').val(),
+            BankCity: $('#editBankCity').val()
+        };
+        $.ajax({
+            url: '/api/kontragents/' + id,
+            type: 'PUT',
+            data: JSON.stringify(kontrAgent),
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                GetKontrAgents(); //в случае успеха обновляем список
+            },
+            error: function (x, y, z) {
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+    }
+    
+    </script>
+}
