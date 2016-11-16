@@ -2,207 +2,249 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<h3>Список контрагентов</h3>
 <div id="tableBlock"></div>
-<div id="editBlock">
-    <p><b>Редактирование контрагента</b></p>
-    <table>
-        <tr><td><input type="hidden" id="editId" /></td><td></td></tr>
-        <tr><td><label>Название: </label></td><td><input type="text" id="editName" /></td></tr>
-        <tr><td><label>ИНН: </label></td><td><input type="text" id="editInn" /></td></tr>
-        <tr><td><label>Расчетный счет: </label></td><td><input type="text" id="editAccount" /></td></tr>
-        <tr><td><label>Наименование банка: </label></td><td><input type="text" id="editBankName" /></td></tr>
-        <tr><td><label>Город банка: </label></td><td><input type="text" id="editBankCity" /></td></tr>
-    </table>
-    <button id="editKontrAgent">Сохранить</button>
-</div>
-<div id="createBlock">
-    <p><b>Добавление контрагента</b></p>
-    <table>
-        <tr><td><label>Название: </label></td><td><input type="text" id="addName" /></td></tr>
-        <tr><td><label>ИНН: </label></td><td><input type="text" id="addInn" /></td></tr>
-        <tr><td><label>Расчетный счет: </label></td><td><input type="text" id="addAccount" /></td></tr>
-        <tr><td><label>Наименование банка: </label></td><td><input type="text" id="addBankName" /></td></tr>
-        <tr><td><label>Город банка: </label></td><td><input type="text" id="addBankCity" /></td></tr>
-    </table>
-    <button id="addKontrAgent">Сохранить</button>
-</div>
+<button type="button" class="btn btn-primary pull-right" onclick="$('#modDialog').modal('show');">Добавить вручную</button>
+<div id="modDialog" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+                <h4 class="modal-title">Контрагент</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" class="form-horizontal">
+                    <div id="editBlock">
+                        <div class="form-group"><input type="hidden" id="editId" /></div>
+                        <div class="form-group"><label class="control-label col-md-2" for="editName">Название: </label><div class="col-md-10"><input type="text" id="editName" class="form-control" required /></div></div>
+                        <div class="form-group"><label class="control-label col-md-2" for="editInn">ИНН: </label><div class="col-md-10"><input type="text" id="editInn" class="form-control" required /></div></div>
+                        <div class="form-group"><label class="control-label col-md-2" for="editAccount">Расчетный счет: </label><div class="col-md-10"><input type="text" id="editAccount" class="form-control" required /></div></div>
+                        <div class="form-group"><label class="control-label col-md-2" for="editBankName">Название банка: </label><div class="col-md-10"><input type="text" id="editBankName" class="form-control" required /></div></div>
+                        <div class="form-group"><label class="control-label col-md-2" for="editBankCity">Город банка: </label><div class="col-md-10"><input type="text" id="editBankCity" class="form-control" required /></div></div>
+                    </div>
+                    <div id="createBlock">
+                        <div class="form-group"><label class="control-label col-md-2" for="addName">Название: </label><div class="col-md-10"><input type="text" id="addName" class="form-control" required /></div></div>
+                        <div class="form-group"><label class="control-label col-md-2" for="addInn">ИНН: </label><div class="col-md-10"><input type="text" id="addInn" class="form-control" required /></div></div>
+                        <div class="form-group"><label class="control-label col-md-2" for="addAccount">Расчетный счет: </label><div class="col-md-10"><input type="text" id="addAccount" class="form-control" required /></div></div>
+                        <div class="form-group"><label class="control-label col-md-2" for="addBankName">Название банка: </label><div class="col-md-10"><input type="text" id="addBankName" class="form-control" required /></div></div>
+                        <div class="form-group"><label class="control-label col-md-2" for="addBankCity">Город банка: </label><div class="col-md-10"><input type="text" id="addBankCity" class="form-control" required /></div></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="btn-group pull-right">
+                    <button id="editKontrAgent" type="button" class="btn btn-primary">Сохранить</button>
+                    <button id="addKontrAgent" type="button" class="btn btn-primary">Добавить</button>
+                    <button id="closeKontrAgent" type="button" class="btn btn-default">Отмена</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>     
+
 
 @section scripts
 {
-    <script type="text/javascript">
-    $(document).ready(function () {
+            <script type="text/javascript">
+                $(document).ready(function () {
 
-        GetKontrAgents(); //получаем список контрагентов
+                    GetKontrAgents(); //получаем список контрагентов
 
-        $("#editKontrAgent").click(function (event) {
-            event.preventDefault();
-            EditKontrAgent(); //переходим к редактированию
-        });
+                    $("#editKontrAgent").click(function (event) {
+                        event.preventDefault();
+                        EditKontrAgent(); //переходим к редактированию
+                    });
 
-        $("#addKontrAgent").click(function (event) {
-            event.preventDefault();
-            AddKontrAgent(); //переходим к добавлению
-        });
+                    $("#addKontrAgent").click(function (event) {
+                        event.preventDefault();
+                        AddKontrAgent(); //переходим к добавлению
+                    });
 
-    });
+                    $("#closeKontrAgent").click(function (event) {
+                        event.preventDefault();
+                        CloseKontrAgent(); //закрываем модальное окно
+                    });
 
-    //получение всех контрагентов
-    function GetKontrAgents() {
+                });
 
-        $("#createBlock").css('display', 'block'); //изначально скрываем блок редактирования, показваем только блок добавления 
-        $("#editBlock").css('display', 'none');
-        $.ajax({
-            url: '/api/kontragents',
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                WriteResponse(data); //в случае успеха выводим таблицу с данными
-            },
-            error: function (x, y, z) {
-                alert(x + '\n' + y + '\n' + z);
-            }
-        });
-    }
+                //получение всех контрагентов
+                function GetKontrAgents() {
+                    $("#createBlock").css('display', 'block'); //изначально скрываем блок редактирования, показваем только блок добавления
+                    $("#addKontrAgent").css('display', 'block');
+                    $("#editBlock").css('display', 'none');
+                    $("#editKontrAgent").css('display', 'none');
 
-    //вывод полученных данных о контрагентах на экран в виде таблицы
-    function WriteResponse(kontrAgents) {
-        var strResult = "<table><th>ID</th><th>Название</th><th>ИНН</th><th>Расчетный счет</th><th>Название банка</th><th>Город банка</th>";
-        $.each(kontrAgents, function (index, kontrAgent) {
-            strResult += "<tr><td>" + kontrAgent.Id + "</td><td> " + kontrAgent.Name + "</td><td>" +
-            kontrAgent.Inn + "</td><td>" + kontrAgent.Account + "</td><td>" + kontrAgent.BankName + "</td><td>" + kontrAgent.BankCity +
-            "</td><td><a id='editItem' data-item='" + kontrAgent.Id + "' onclick='EditItem(this);' >Редактировать</a></td>" +
-            "<td><a id='delItem' data-item='" + kontrAgent.Id + "' onclick='DeleteItem(this);' >Удалить</a></td></tr>";
-        });
-        strResult += "</table>";
-        $("#tableBlock").html(strResult);
-    }   
-    
-    //обработчик выбора удаления напротив контрагента в таблице
-    function DeleteItem(el)
-    {
-        //получаем id удаляемого объекта
-        var id = $(el).attr('data-item');
-        //удаляем из БД по идентификатору
-        DeleteKontrAgent(id);
-    }
 
-    //удаление контрагента из базы по идентификатору
-    function DeleteKontrAgent(id)
-    {
-        $.ajax({
-            url: '/api/kontragents/' + id,
-            type: 'DELETE',
-            contentType: "application/json;charset=utf-8",
-            success: function (data) {
-                GetKontrAgents(); //в случае успеха обновляем список
-            },
-            error: function (x, y, z) {
-                alert(x + '\n' + y + '\n' + z);
-            }
-        });
-    }
+                    $.ajax({
+                        url: '/api/kontragents',
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (data) {
+                            WriteResponse(data); //в случае успеха выводим таблицу с данными
+                        },
+                        error: function (x, y, z) {
+                            alert(x + '\n' + y + '\n' + z);
+                        }
+                    });
+                }
 
-    //обработчик выбора редактирования напротив контрагента в таблице
-    function EditItem(el)
-    {
-        //получаем id редактируемого объекта
-        var id = $(el).attr('data-item');
-        //запрашиваем данные в БД для их отображения на форме
-        GetKontrAgent(id);
-    }
+                //вывод полученных данных о контрагентах на экран в виде таблицы
+                function WriteResponse(kontrAgents) {
+                    var strResult = "<table class='table table-striped'><th>Название</th><th>ИНН</th><th>Расчетный счет</th><th>Название банка</th><th>Город банка</th>";
+                    $.each(kontrAgents, function (index, kontrAgent) {
+                        strResult += "<tr><td> " + kontrAgent.Name + "</td><td>" +
+                        kontrAgent.Inn + "</td><td>" + kontrAgent.Account + "</td><td>" + kontrAgent.BankName + "</td><td>" + kontrAgent.BankCity +
+                        "</td><td><a id='editItem' data-item='" + kontrAgent.Id + "' onclick='EditItem(this);' >Редактировать</a></td>" +
+                        "<td><a id='delItem' data-item='" + kontrAgent.Id + "' onclick='DeleteItem(this);' >Удалить</a></td></tr>";
+                    });
+                    strResult += "</table>";
 
-    //запрос данных контрагента по идентификатору для дальнейшего редактирования
-    function GetKontrAgent(id)
-    {
-        $.ajax({
-            url: '/api/kontragents/' + id,
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                ShowKontrAgent(data); //в случае успеха выводим данные в карту контрагента
-            },
-            error: function (x, y, z) {
-                alert(x + '\n' + y + '\n' + z);
-            }
-        });
-    }
+                    $("#tableBlock").html(strResult);
+                }
 
-    //вывод данных редактируемого контрагента в поля для редактирования
-    function ShowKontrAgent(kontrAgent)
-    {
-        if (kontrAgent != null)
-        {
-            $("#createBlock").css('display', 'none'); //скрываем блок добавления и отображаем блок редактирования
-            $("#editBlock").css('display', 'block');
+                //обработчик выбора удаления напротив контрагента в таблице
+                function DeleteItem(el) {
+                    //получаем id удаляемого объекта
+                    var id = $(el).attr('data-item');
+                    //удаляем из БД по идентификатору
+                    DeleteKontrAgent(id);
+                }
 
-            //выводим все данные на форму
-            $("#editId").val(kontrAgent.Id);
-            $("#editInn").val(kontrAgent.Inn);
-            $("#editAccount").val(kontrAgent.Account);
-            $("#editName").val(kontrAgent.Name);
-            $("#editBankName").val(kontrAgent.BankName);
-            $("#editBankCity").val(kontrAgent.BankCity);
+                //удаление контрагента из базы по идентификатору
+                function DeleteKontrAgent(id) {
+                    $.ajax({
+                        url: '/api/kontragents/' + id,
+                        type: 'DELETE',
+                        contentType: "application/json;charset=utf-8",
+                        success: function (data) {
+                            GetKontrAgents(); //в случае успеха обновляем список
+                        },
+                        error: function (x, y, z) {
+                            alert(x + '\n' + y + '\n' + z);
+                        }
+                    });
+                }
+
+                //обработчик выбора редактирования напротив контрагента в таблице
+                function EditItem(el) {
+                    //получаем id редактируемого объекта
+                    var id = $(el).attr('data-item');
+                    //запрашиваем данные в БД для их отображения на форме
+                    GetKontrAgent(id);
+                }
+
+                //запрос данных контрагента по идентификатору для дальнейшего редактирования
+                function GetKontrAgent(id) {
+                    $.ajax({
+                        url: '/api/kontragents/' + id,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (data) {
+                            ShowKontrAgent(data); //в случае успеха выводим данные в карту контрагента
+                        },
+                        error: function (x, y, z) {
+                            alert(x + '\n' + y + '\n' + z);
+                        }
+                    });
+                }
+
+                //вывод данных редактируемого контрагента в поля для редактирования
+                function ShowKontrAgent(kontrAgent) {
+                    if (kontrAgent != null) {                                          
+                        $("#createBlock").css('display', 'none'); //скрываем блок добавления и отображаем блок редактирования
+                        $("#addKontrAgent").css('display', 'none');
+                        $("#editBlock").css('display', 'block');
+                        $("#editKontrAgent").css('display', 'block');
+
+                        //выводим все данные на форму
+                        $("#editId").val(kontrAgent.Id);
+                        $("#editInn").val(kontrAgent.Inn);
+                        $("#editAccount").val(kontrAgent.Account);
+                        $("#editName").val(kontrAgent.Name);
+                        $("#editBankName").val(kontrAgent.BankName);
+                        $("#editBankCity").val(kontrAgent.BankCity);
+
+                        $('#modDialog').modal('show');
+                    }
+                    else {
+                        alert("Такой контрагент не существует");
+                    }
+
+
+                }
+
+                //добавление нового контрагента в базу путем нажатия "Сохранить" в карте контрагента  (в случае активности блока добавления)
+                function AddKontrAgent() {
+                    //получаем значения для добавляемого контрагента
+                    var kontrAgent =
+                    {
+                        Name: $('#addName').val(),
+                        Inn: $('#addInn').val(),
+                        Account: $('#addAccount').val(),
+                        BankName: $('#addBankName').val(),
+                        BankCity: $('#addBankCity').val()
+                    };
+
+                    $.ajax({
+                        url: '/api/kontragents',
+                        type: 'POST',
+                        data: JSON.stringify(kontrAgent),
+                        contentType: "application/json;charset=utf-8",
+                        success: function (data) {
+                            CloseKontrAgent(); //закрываем окно с картой контрагента
+                            GetKontrAgents(); //в случае успеха обновляем список
+                        },
+                        error: function (x, y, z) {
+                            alert(x + '\n' + y + '\n' + z);
+                        }
+                    });
+                }
+
+                //обновление данных контрагента в базе путем нажатия "Сохранить" в карте контрагента (в случае активности блока редактирования)
+                function EditKontrAgent() {
+                    var id = $('#editId').val();
+
+                    //получаем новые значения для редактируемого контрагента
+                    var kontrAgent = {
+                        Id: $('#editId').val(),
+                        Name: $('#editName').val(),
+                        Inn: $('#editInn').val(),
+                        Account: $('#editAccount').val(),
+                        BankName: $('#editBankName').val(),
+                        BankCity: $('#editBankCity').val()
+                    };
+                    $.ajax({
+                        url: '/api/kontragents/' + id,
+                        type: 'PUT',
+                        data: JSON.stringify(kontrAgent),
+                        contentType: "application/json;charset=utf-8",
+                        success: function (data) {
+                            CloseKontrAgent(); //закрываем окно с картой контрагента
+                            GetKontrAgents(); //в случае успеха обновляем список
+                        },
+                        error: function (x, y, z) {
+                            alert(x + '\n' + y + '\n' + z);
+                        }
+                    });
+                }
+
+                //закрытие модального окна с картой контрагента - очищаем все поля и скрываем окно
+                function CloseKontrAgent() {
+                    $("#editId").val(0);
+                    $("#editInn").val("");
+                    $("#editAccount").val("");
+                    $("#editName").val("");
+                    $("#editBankName").val("");
+                    $("#editBankCity").val("");
+
+                    $("#addInn").val("");
+                    $("#addAccount").val("");
+                    $("#addName").val("");
+                    $("#addBankName").val("");
+                    $("#addBankCity").val("");
+
+                    $('#modDialog').modal('hide');
+                }
+
+            </script>
         }
-        else
-        {
-            alert("Такой контрагент не существует");
-        }
-    }
-
-    //добавление нового контрагента в базу путем нажатия "Сохранить" в карте контрагента  (в случае активности блока добавления)
-    function AddKontrAgent()
-    {
-        //получаем значения для добавляемого контрагента
-        var kontrAgent =
-        {
-            Name: $('#addName').val(),
-            Inn: $('#addInn').val(),
-            Account: $('#addAccount').val(),
-            BankName: $('#addBankName').val(),
-            BankCity: $('#addBankCity').val()
-        };
-
-        $.ajax({
-            url: '/api/kontragents',
-            type: 'POST',
-            data: JSON.stringify(kontrAgent),
-            contentType: "application/json;charset=utf-8",
-            success: function (data) {
-                GetKontrAgents(); //в случае успеха обновляем список
-            },
-            error: function (x, y, z) {
-                alert(x + '\n' + y + '\n' + z);
-            }
-        });
-    }
-
-    //обновление данных контрагента в базе путем нажатия "Сохранить" в карте контрагента (в случае активности блока редактирования)
-    function EditKontrAgent()
-    {
-        var id = $('#editId').val();
-
-        //получаем новые значения для редактируемого контрагента
-        var kontrAgent = {
-            Id: $('#editId').val(),
-            Name: $('#editName').val(),
-            Inn: $('#editInn').val(),
-            Account: $('#editAccount').val(),
-            BankName: $('#editBankName').val(),
-            BankCity: $('#editBankCity').val()
-        };
-        $.ajax({
-            url: '/api/kontragents/' + id,
-            type: 'PUT',
-            data: JSON.stringify(kontrAgent),
-            contentType: "application/json;charset=utf-8",
-            success: function (data) {
-                GetKontrAgents(); //в случае успеха обновляем список
-            },
-            error: function (x, y, z) {
-                alert(x + '\n' + y + '\n' + z);
-            }
-        });
-    }
-    
-    </script>
-}

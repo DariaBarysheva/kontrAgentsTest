@@ -10,16 +10,21 @@
 </head>
 <body>
     <nav>
-        <ul class="menu">
+        <ul class="nav nav-pills">
             <li>@Html.ActionLink("Главная", "Index", "Home")</li>
+            <li>@Html.ActionLink("Импорт", "Import", "Home")</li>             
         </ul>
     </nav>
+          
     @RenderBody()
     
 
+    
+  
+
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
-    
+
     @RenderSection("scripts", required: false)
 </body>
 </html>

@@ -14,5 +14,12 @@ namespace KontrAgentsApp.Controllers
 
             return View();
         }
+
+        public ActionResult Import()
+        {
+            ViewBag.Title = "Import Page";
+
+            return View();
+        }
     }
 }
