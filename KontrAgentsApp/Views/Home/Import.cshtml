@@ -52,6 +52,11 @@
                 ImportKontrAgents(); //переходим к парсингу файла
             });
 
+            $('#addToDB').click(function (event) {
+                event.preventDefault();
+                AddKontrAgents(); //переходим к добавлению данных из файла в БД
+            });
+
             $("#closeKontrAgent").click(function (event) {
                 event.preventDefault();
                 CloseKontrAgent(); //закрываем модальное окно
@@ -102,9 +107,9 @@
 
         //вывод полученных данных о контрагентах на экран в виде таблицы
         function WriteResponse(kontrAgents) {
-            var strResult = "<h3>Список контрагентов в файле</h3><table class='table table-striped'><th>Название</th><th>ИНН</th><th>Расчетный счет</th><th>Название банка</th><th>Город банка</th>";
+            var strResult = "<h3>Список контрагентов в файле</h3><table class='table table-striped'><th>Загружать в БД</th><th>Название</th><th>ИНН</th><th>Расчетный счет</th><th>Название банка</th><th>Город банка</th>";
             $.each(kontrAgents, function (index, kontrAgent) {
-                strResult += "<tr><td> " + kontrAgent.Name + "</td><td>" +
+                strResult += "<tr><td><input type='checkbox' checked id='checkBox" + index + "'/></td><td> " + kontrAgent.Name + "</td><td>" +
                 kontrAgent.Inn + "</td><td>" + kontrAgent.Account + "</td><td>" + kontrAgent.BankName + "</td><td>" + kontrAgent.BankCity +
                 "</td><td><a id='viewItem' onclick='ShowKontrAgent(" + index + ");' >Просмотреть</a></td>" +
                 "</tr>";
@@ -135,6 +140,42 @@
             $("#viewBankCity").val("");
 
             $('#modDialog').modal('hide');
+        }
+
+        //добавление отмеченных контрагентов в БД
+        function AddKontrAgents() {
+            //список из файла загружен
+            if (listKontrAgents != undefined) {
+                var checkedCount = 0;
+                //проходим по глобально определенному списку загруженных из файла строк
+                $.each(listKontrAgents, function (index, kontrAgent) {
+                    if ($("#checkBox" + index).attr("checked") == 'checked') {
+                        checkedCount++;
+                        $.ajax({
+                            url: '/api/kontragents/1',
+                            type: 'POST',
+                            data: JSON.stringify(kontrAgent),
+                            contentType: "application/json;charset=utf-8",
+                            success: function (data) {
+                            },
+                            error: function (x, y, z) {
+                                alert(x + '\n' + y + '\n' + z);
+                            }
+                        });
+                    }
+                });
+                if (checkedCount != 0) {
+                    $("#tableBlock").html("");
+                    alert(checkedCount + " записей(-и) было успешно загружено в БД");
+                }
+                else
+                {
+                    alert("Пожалуйста, предварительно отметьте флажком в таблице по крайней мере одну запись для загрузки");
+                }
+            }
+            else {
+                alert("Пожалуйста, предварительно укажите путь к файлу и нажмите кнопку 'Вывести данные из файла'");
+            }
         }
 
 

@@ -13,6 +13,7 @@ namespace KontrAgentsApp.Controllers
 {
     public class ImportController : ApiController
     {
+        KontrAgentRepository repo = new KontrAgentRepository();
         private List<KontrAgent> listKontrAgents;
 
         public async Task<IEnumerable<KontrAgent>> Post()
@@ -81,6 +82,12 @@ namespace KontrAgentsApp.Controllers
             {
                 return null;
             }
+        }
+
+        [HttpPost]
+        public void CreateKontrAgent(int id, [FromBody]KontrAgent kontrAgent)
+        {
+            repo.Create(kontrAgent);
         }
     }
 }
