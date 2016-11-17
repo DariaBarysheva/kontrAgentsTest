@@ -8,78 +8,134 @@
         <div class="form-group">
             <input type="file" class ="form-control" id="uploadFile" accept="text/plain"/>     
         </div>  
-        <div class="form-group">
-            <button type="button" class="btn btn-primary pull-right" id="submit">Загрузить</button>
+        <div class="form-group btn-group pull-right">
+            <button type="button" class="btn btn-primary" id="submit">Вывести данные из файла</button>
+            <button type="button" class="btn btn-default" id="addToDB">Добавить данные в БД</button>
         </div>
     </form>
 </div>
 <br>
+
+<div id="modDialog" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+                <h4 class="modal-title">Контрагент</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" class="form-horizontal">                   
+                     <div class="form-group"><label class="control-label col-md-2" for="viewtName">Название: </label><div class="col-md-10"><input type="text" id="viewName" class="form-control" readonly/></div></div>
+                     <div class="form-group"><label class="control-label col-md-2" for="viewInn">ИНН: </label><div class="col-md-10"><input type="text" id="viewInn" class="form-control" readonly/></div></div>
+                     <div class="form-group"><label class="control-label col-md-2" for="viewAccount">Расчетный счет: </label><div class="col-md-10"><input type="text" id="viewAccount" class="form-control" readonly/></div></div>
+                     <div class="form-group"><label class="control-label col-md-2" for="viewBankName">Название банка: </label><div class="col-md-10"><input type="text" id="viewBankName" class="form-control" readonly/></div></div>
+                     <div class="form-group"><label class="control-label col-md-2" for="viewBankCity">Город банка: </label><div class="col-md-10"><input type="text" id="viewBankCity" class="form-control" readonly/></div></div>                    
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="btn-group pull-right">
+                    <button id="closeKontrAgent" type="button" class="btn btn-primary">Отмена</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
+
 <div id="tableBlock"></div>
 
 @section scripts{
     <script type="text/javascript">
+        $(document).ready(function () {
+            var listKontrAgents;
+            $('#submit').click(function (event) {
+                event.preventDefault();
+                ImportKontrAgents(); //переходим к парсингу файла
+            });
 
-    $('#submit').on('click', function (e) {
-        e.preventDefault();
-        if (document.getElementById('uploadFile').value != '')
-        {
-            var files = document.getElementById('uploadFile').files;
-            if (files != undefined && files.length > 0)
-            {
-                if (window.FormData != undefined)
-                {
-                    var data = new FormData();
-                    for (var x = 0; x < files.length; x++)
-                    {
-                        data.append("file" + x, files[x]);
-                    }
+            $("#closeKontrAgent").click(function (event) {
+                event.preventDefault();
+                CloseKontrAgent(); //закрываем модальное окно
+            });
 
-                    $.ajax({
-                        type: "POST",
-                        url: '/api/import',
-                        contentType: false,
-                        processData: false,
-                        data: data,
-                        success: function (result) {
-                            WriteResponse(result);
-                            $('#uploadFile').prop('value', null);
-                        },
-                        error: function (xhr, status, p3) {
-                            alert(xhr.responseText);
+        });
+
+        //отправка файла на сервер и парсинг контрагентов из файла
+        function ImportKontrAgents() {
+            if (document.getElementById('uploadFile').value != '') {
+                var files = document.getElementById('uploadFile').files;
+                if (files != undefined && files.length > 0) {
+                    if (window.FormData != undefined) {
+                        var data = new FormData();
+                        for (var x = 0; x < files.length; x++) {
+                            data.append("file" + x, files[x]);
                         }
-                    });
+
+                        $.ajax({
+                            type: "POST",
+                            url: '/api/import',
+                            contentType: false,
+                            processData: false,
+                            data: data,
+                            success: function (result) {
+                                listKontrAgents = result; //заполняем глобальную переменную - список контрагентов из файла
+                                WriteResponse(result); //заполняем таблицу данными о контрагентах
+                                $('#uploadFile').prop('value', null); //очищаем поле с названием выбранного файла
+                            },
+                            error: function (xhr, status, p3) {
+                                alert(xhr.responseText);
+                            }
+                        });
+                    }
+                    else {
+                        alert("Извините, Ваш браузер не поддерживает загрузку файлов");
+                    }
                 }
-                else
-                {
+                else {
                     alert("Извините, Ваш браузер не поддерживает загрузку файлов");
                 }
             }
-            else
-            {
-                alert("Извините, Ваш браузер не поддерживает загрузку файлов");
+            else {
+                alert("Пожалуйста, предварительно укажите путь к файлу");
             }
         }
-        else
-        {
-            alert("Пожалуйста, предварительно укажите путь к файлу");
+
+
+        //вывод полученных данных о контрагентах на экран в виде таблицы
+        function WriteResponse(kontrAgents) {
+            var strResult = "<h3>Список контрагентов в файле</h3><table class='table table-striped'><th>Название</th><th>ИНН</th><th>Расчетный счет</th><th>Название банка</th><th>Город банка</th>";
+            $.each(kontrAgents, function (index, kontrAgent) {
+                strResult += "<tr><td> " + kontrAgent.Name + "</td><td>" +
+                kontrAgent.Inn + "</td><td>" + kontrAgent.Account + "</td><td>" + kontrAgent.BankName + "</td><td>" + kontrAgent.BankCity +
+                "</td><td><a id='viewItem' onclick='ShowKontrAgent(" + index + ");' >Просмотреть</a></td>" +
+                "</tr>";
+            });
+            strResult += "</table>";
+
+            $("#tableBlock").html(strResult);
         }
-        
-    });
 
+        //обработчик выбора просмотра напротив контрагента в таблице
+        function ShowKontrAgent(index) {
+            //выводим все данные на форму
+            $("#viewInn").val(listKontrAgents[index].Inn);
+            $("#viewAccount").val(listKontrAgents[index].Account);
+            $("#viewName").val(listKontrAgents[index].Name);
+            $("#viewBankName").val(listKontrAgents[index].BankName);
+            $("#viewBankCity").val(listKontrAgents[index].BankCity);
 
-    //вывод полученных данных о контрагентах на экран в виде таблицы
-    function WriteResponse(kontrAgents) {
-        var strResult = "<h3>Список контрагентов в файле</h3><table class='table table-striped'><th>Название</th><th>ИНН</th><th>Расчетный счет</th><th>Название банка</th><th>Город банка</th>";
-        $.each(kontrAgents, function (index, kontrAgent) {
-            strResult += "<tr><td> " + kontrAgent.Name + "</td><td>" +
-            kontrAgent.Inn + "</td><td>" + kontrAgent.Account + "</td><td>" + kontrAgent.BankName + "</td><td>" + kontrAgent.BankCity +
-            "</td><td><a id='editItem' data-item='" + kontrAgent.Id + "' onclick='EditItem(this);' >Просмотреть</a></td>" +
-            "</tr>";
-        });
-        strResult += "</table>";
+            $('#modDialog').modal('show');
+        }
 
-        $("#tableBlock").html(strResult);
-    }
+        //закрытие модального окна с картой контрагента - очищаем все поля и скрываем окно
+        function CloseKontrAgent() {
+            $("#viewInn").val("");
+            $("#viewAccount").val("");
+            $("#viewName").val("");
+            $("#viewBankName").val("");
+            $("#viewBankCity").val("");
+
+            $('#modDialog').modal('hide');
+        }
 
 
     </script>
