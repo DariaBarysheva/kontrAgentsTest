@@ -39,7 +39,7 @@ namespace KontrAgentsApp.Models
         {
             using (IDbConnection db = new SqlConnection(connectionString))
             {
-                var sqlQuery = "INSERT INTO KontrAgents (Name, Inn, Account, BankName, BankCity) VALUES(@Name, @Inn, @Account, @BankName, @BankCity); SELECT CAST(SCOPE_IDENTITY() as int)";
+                var sqlQuery = "INSERT INTO KontrAgents (Name, Inn, Account, BankName, BankCity) VALUES(@Name, @Inn, @Account, @BankName, @BankCity); SELECT CAST(SCOPE_IDENTITY() as int);";
                 int kontrAgentId = db.Query<int>(sqlQuery, kontrAgent).FirstOrDefault();
                 kontrAgent.Id = kontrAgentId;
             }
