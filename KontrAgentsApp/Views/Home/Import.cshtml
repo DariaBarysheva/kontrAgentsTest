@@ -147,33 +147,39 @@
             //список из файла загружен
             if (typeof listKontrAgents != "undefined") {
                 var checkedCount = 0;
+                var tempArray = [];
                 
                 //проходим по глобально определенному списку загруженных из файла записей
                 $.each(listKontrAgents, function (index, kontrAgent) {
                     //если запись отмечена флажком - добавляем в БД
-                    if ($("#checkBox" + index).prop("checked") == true) {
-                        checkedCount++;
-                        $.ajax({
-                            url: '/api/kontragents/1',
+                    if ($("#checkBox" + index).prop("checked") == true) {                        
+                        tempArray[checkedCount++] = {
+                            Name: kontrAgent.Name,
+                            Inn: kontrAgent.Inn,
+                            Account: kontrAgent.Account,
+                            BankName: kontrAgent.BankName,
+                            BankCity: kontrAgent.BankCity
+                        };
+                    }
+                });
+                if (checkedCount == 0) //нет отмеченных строк
+                {
+                    alert("Пожалуйста, предварительно отметьте флажком в таблице по крайней мере одну запись для загрузки");
+                }
+                else //отправляем отмеченные строки на сервер
+                {
+                    $.ajax({
+                            url: '/api/import/1',
                             type: 'POST',
-                            data: JSON.stringify(kontrAgent),
+                            data: JSON.stringify(tempArray),
                             contentType: "application/json;charset=utf-8",
                             success: function (data) {
+                            $("#tableBlock").html("");
                             },
                             error: function (x, y, z) {
                                 alert(x + '\n' + y + '\n' + z);
                             }
                         });
-                    }
-                });
-                if (checkedCount != 0)
-                {
-                    $("#tableBlock").html("");
-                    alert(checkedCount + " записей(-и) было успешно загружено в БД");
-                }
-                else
-                {
-                    alert("Пожалуйста, предварительно отметьте флажком в таблице по крайней мере одну запись для загрузки");
                 }
             }
             else

@@ -85,9 +85,12 @@ namespace KontrAgentsApp.Controllers
         }
 
         [HttpPost]
-        public void CreateKontrAgent(int id, [FromBody]KontrAgent kontrAgent)
+        public void CreateKontrAgent(int id, [FromBody]IEnumerable<KontrAgent> tempListKontrAgents)
         {
-            repo.Create(kontrAgent);
+            foreach (KontrAgent kontrAgent in tempListKontrAgents)
+            {
+                repo.Create(kontrAgent);
+            }
         }
     }
 }
