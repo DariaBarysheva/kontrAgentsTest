@@ -4,16 +4,17 @@
 
 <h3>Импорт контрагентов из файла</h3>
 <div>
-    <form role="form" class="form-horizontal">
+    <form role="form">
         <div class="form-group">
-            <label class="control-label col-md-2" for="uploadFile">Укажите путь к файлу</label>
-            <div class="col-md-10">
-                <input type="file" class="form-control" id="uploadFile" accept="text/plain"/>
-            </div>
+            <input type="file" class ="form-control" id="uploadFile" accept="text/plain"/>     
+        </div>  
+        <div class="form-group">
+            <button type="button" class="btn btn-primary pull-right" id="submit">Загрузить</button>
         </div>
-        <button type ="button" class ="btn btn-primary pull-right" id="submit">Загрузить</button>
     </form>
 </div>
+<br>
+<div id="tableBlock"></div>
 
 @section scripts{
     <script type="text/javascript">
@@ -40,7 +41,8 @@
                         processData: false,
                         data: data,
                         success: function (result) {
-                            alert(result);
+                            WriteResponse(result);
+                            $('#uploadFile').prop('value', null);
                         },
                         error: function (xhr, status, p3) {
                             alert(xhr.responseText);
@@ -63,5 +65,22 @@
         }
         
     });
+
+
+    //вывод полученных данных о контрагентах на экран в виде таблицы
+    function WriteResponse(kontrAgents) {
+        var strResult = "<h3>Список контрагентов в файле</h3><table class='table table-striped'><th>Название</th><th>ИНН</th><th>Расчетный счет</th><th>Название банка</th><th>Город банка</th>";
+        $.each(kontrAgents, function (index, kontrAgent) {
+            strResult += "<tr><td> " + kontrAgent.Name + "</td><td>" +
+            kontrAgent.Inn + "</td><td>" + kontrAgent.Account + "</td><td>" + kontrAgent.BankName + "</td><td>" + kontrAgent.BankCity +
+            "</td><td><a id='editItem' data-item='" + kontrAgent.Id + "' onclick='EditItem(this);' >Просмотреть</a></td>" +
+            "</tr>";
+        });
+        strResult += "</table>";
+
+        $("#tableBlock").html(strResult);
+    }
+
+
     </script>
 }
