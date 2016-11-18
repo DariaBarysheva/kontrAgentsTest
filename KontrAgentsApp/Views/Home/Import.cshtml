@@ -8,11 +8,15 @@
         <div class="form-group">
             <input type="file" class ="form-control" id="uploadFile" accept="text/plain"/>     
         </div>  
-        <div class="form-group btn-group pull-right">
-            <button type="button" class="btn btn-primary" id="submit">Вывести данные из файла</button>
-            <button type="button" class="btn btn-default" id="addToDB">Добавить данные в БД</button>
+        <div class="form-group">
+            <input type="checkbox" id="checkBoxDubles"/>
+            <label>Добавлять в БД найденные дубликаты</label>
+            <div class="btn-group pull-right">
+                <button type="button" class="btn btn-primary" id="submit">Вывести данные из файла</button>
+                <button type="button" class="btn btn-default" id="addToDB">Добавить данные в БД</button>
+            </div>
         </div>
-    </form>
+</form>
 </div>
 <br>
 
@@ -46,7 +50,9 @@
 @section scripts{
     <script type="text/javascript">
         $(document).ready(function () {
-            var listKontrAgents;
+            var listKontrAgents; //глобальная переменная для ведения списка записей, полученных из файла
+            ChangeDBElementsDisable(true); //установка доступности флажка и кнопки для загрузки в БД
+
             $('#submit').click(function (event) {
                 event.preventDefault();
                 ImportKontrAgents(); //переходим к парсингу файла
@@ -60,6 +66,11 @@
             $("#closeKontrAgent").click(function (event) {
                 event.preventDefault();
                 CloseKontrAgent(); //закрываем модальное окно
+            });
+
+            $("#checkBoxDubles").change(function (event) {
+                event.preventDefault();
+                ChangeDublesChecked(this.checked); //устанавливаем отметку о выгрузке для найденных дубликатов
             });
 
         });
@@ -82,6 +93,7 @@
                             processData: false,
                             data: data,
                             success: function (result) {
+                                ChangeDBElementsDisable(false); //установка доступности флажка и кнопки для загрузки в БД
                                 listKontrAgents = result; //заполняем глобальную переменную - список контрагентов из файла
                                 WriteResponse(result); //заполняем таблицу данными о контрагентах
                             },
@@ -106,22 +118,25 @@
 
         //вывод полученных данных о контрагентах на экран в виде таблицы
         function WriteResponse(kontrAgents) {
-            var strResult = "<h3>Список уникальных контрагентов в файле</h3><table class='table table-striped'><th>№ п/п</th><th>Название</th><th>ИНН</th>" + /*"<th>Расчетный счет</th><th>Название банка</th><th>Город банка</th>"*/ "<th>Примечание</th>" + "<th>Загружать в БД</th>";
+            var strResult = "<h3>Список уникальных контрагентов в файле</h3><table class='table table-striped'><th>№ п/п</th><th>Название</th><th>ИНН</th>" + /*"<th>Расчетный счет</th><th>Название банка</th><th>Город банка</th>"*/ "<th>Примечание</th>" + "<th>Загружать в БД</th><th></th>";
             var tempNote;
+            var tempChecked;
             $.each(kontrAgents, function (index, kontrAgent) {
                 if (kontrAgent.Id == -1)
                 {
                     tempNote = "найден дубликат в БД";
+                    tempChecked = "";
                 }
                 else
                 {
                     tempNote = "";
+                    tempChecked = " checked ";
                 }
 
                 strResult += "<tr><td> " + (index + 1) + "</td><td>" + kontrAgent.Name + "</td><td>" + kontrAgent.Inn + "</td>" +
                 /*"<td>" + kontrAgent.Account + "</td><td>" + kontrAgent.BankName + "</td><td>" + kontrAgent.BankCity + "</td>" +*/
                 "<td>" + tempNote + "</td>"+
-                "<td><input type='checkbox' checked id='checkBox" + index + "'/></td>" + "<td><a id='viewItem' onclick='ShowKontrAgent(" + index + ");' >Просмотреть</a></td>" +
+                "<td><input type='checkbox' " + tempChecked  + " id='checkBox" + index + "'/></td>" + "<td><a id='viewItem' onclick='ShowKontrAgent(" + index + ");' >Просмотреть</a></td>" +
                 "</tr>";
             });
             strResult += "</table>";
@@ -150,6 +165,24 @@
             $("#viewBankCity").val("");
 
             $('#modDialog').modal('hide');
+        }
+
+        //смена отметки о необходимости выгрузки на найденных дубликатах
+        function ChangeDublesChecked(newChecked){
+            //проходим по глобально определенному списку загруженных из файла записей
+            $.each(listKontrAgents, function (index, kontrAgent) {
+                if (kontrAgent.Id == -1) //найден дубликат в БД - устанавливаем новое значение отметки "Выгружать в БД"
+                {
+                    $("#checkBox" + index).prop("checked", newChecked);
+                }
+            });
+        }
+
+        //смена доступности флажка "Добавлять в БД найденные дубликаты" и кнопки "Добавить данные в БД"
+        function ChangeDBElementsDisable(newEnableValue)
+        {
+            $("#checkBoxDubles").prop('disabled', newEnableValue);
+            $("#addToDB").prop('disabled', newEnableValue);
         }
 
         //добавление отмеченных контрагентов в БД
@@ -184,8 +217,9 @@
                             data: JSON.stringify(tempArray),
                             contentType: "application/json;charset=utf-8",
                             success: function (data) {
-                                $("#tableBlock").html(""); //очищаем таблицу
+                                $("#tableBlock").html(""); //очищаем таблицу                                
                                 $('#uploadFile').prop('value', null); //очищаем поле с названием выбранного файла
+                                ChangeDBElementsDisable(true); //установка доступности флажка и кнопки для загрузки в БД
                             },
                             error: function (x, y, z) {
                                 alert(x + '\n' + y + '\n' + z);
