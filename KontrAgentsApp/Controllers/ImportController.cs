@@ -66,7 +66,7 @@ namespace KontrAgentsApp.Controllers
                                 }
                                 else //проверим еще на наличие дубликата в самой БД
                                 {
-                                    if(repo.FindByInnName(tempKontrAgent.Inn, tempKontrAgent.Name) != null)
+                                    if(repo.FindByInnName(tempKontrAgent.Inn, tempKontrAgent.Name, tempKontrAgent.Id) != null)
                                     {
                                         tempKontrAgent.Id = -1;
                                     }

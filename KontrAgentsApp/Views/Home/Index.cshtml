@@ -95,7 +95,7 @@
 
                 //вывод полученных данных о контрагентах на экран в виде таблицы
                 function WriteResponse(kontrAgents) {
-                    var strResult = "<table class='table table-striped'><th>№ п/п</th><th>Название</th><th>ИНН</th>" /*+ "<th>Расчетный счет</th><th>Название банка</th><th>Город банка</th>"*/ + "<th></th><th></th>";
+                    var strResult = "<table class='table table-striped'><th>№</th><th>Название</th><th>ИНН</th>" /*+ "<th>Расчетный счет</th><th>Название банка</th><th>Город банка</th>"*/ + "<th></th><th></th>";
                     $.each(kontrAgents, function (index, kontrAgent) {
                         strResult += "<tr><td> " + (index + 1) + "</td><td>" + kontrAgent.Name + "</td><td>" + kontrAgent.Inn + "</td>" +
                         /*"<td>" + kontrAgent.Account + "</td><td>" + kontrAgent.BankName + "</td><td>" + kontrAgent.BankCity + "</td>" +*/
@@ -197,19 +197,17 @@
                         success: function (data) {
                             if (data == null || confirm("В БД найден дубликат введенного Вами контрагента по ИНН и названию (" + WriteFullKontrAgentName(data) + "). Все равно выполнить добавление?"))
                             {
-                                CreateKontrAgent(kontrAgent);
+                                AddKontrAgentDB(kontrAgent);
                             }                            
                         },
                         error: function (x, y, z) {
                             alert(x + '\n' + y + '\n' + z);
                         }
-                    });
-
-                    
+                    });                  
                 }
 
                 //добавление контрагента в БД - в случае, если нет дубликатов или они проигнорированы
-                function CreateKontrAgent(kontrAgent) {
+                function AddKontrAgentDB(kontrAgent) {
                     $.ajax({
                         url: '/api/kontragents',
                         type: 'POST',
@@ -238,8 +236,28 @@
                         BankName: $('#editBankName').val(),
                         BankCity: $('#editBankCity').val()
                     };
+                    //проверяем на наличие дубликата в БД
                     $.ajax({
-                        url: '/api/kontragents/' + id,
+                        url: '/api/kontragents/0',
+                        type: 'POST',
+                        data: JSON.stringify(kontrAgent),
+                        contentType: "application/json;charset=utf-8",
+                        success: function (data) {
+                            if (data == null || confirm("В БД найден дубликат введенного Вами контрагента по ИНН и названию (" + WriteFullKontrAgentName(data) + "). Все равно выполнить сохранение?")) {
+                                EditKontrAgentDB(kontrAgent);
+                            }
+                        },
+                        error: function (x, y, z) {
+                            alert(x + '\n' + y + '\n' + z);
+                        }
+                    });                    
+                }
+
+                //редактируем непосредственно в БД
+                function EditKontrAgentDB(kontrAgent)
+                {
+                    $.ajax({
+                        url: '/api/kontragents/' + kontrAgent.Id,
                         type: 'PUT',
                         data: JSON.stringify(kontrAgent),
                         contentType: "application/json;charset=utf-8",

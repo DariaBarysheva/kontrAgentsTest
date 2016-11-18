@@ -118,7 +118,7 @@
 
         //вывод полученных данных о контрагентах на экран в виде таблицы
         function WriteResponse(kontrAgents) {
-            var strResult = "<h3>Список уникальных контрагентов в файле</h3><table class='table table-striped'><th>№<br>п/п</th><th>Название</th><th>ИНН</th>" + /*"<th>Расчетный счет</th><th>Название банка</th><th>Город банка</th>"*/ "<th>Дубликат в БД<br>по ИНН и названию</th>" + "<th>Добавлять в БД</th><th></th>";
+            var strResult = "<h3>Список уникальных контрагентов в файле</h3><table class='table table-striped'><th>№</th><th>Название</th><th>ИНН</th>" + /*"<th>Расчетный счет</th><th>Название банка</th><th>Город банка</th>"*/ "<th>Дубликат в БД по ИНН и названию</th>" + "<th>Добавлять в БД</th><th></th>";
             var tempNote;
             var tempChecked;
             $.each(kontrAgents, function (index, kontrAgent) {

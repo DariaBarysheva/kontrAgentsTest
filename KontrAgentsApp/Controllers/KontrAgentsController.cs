@@ -31,7 +31,7 @@ namespace KontrAgentsApp.Controllers
         [HttpPost]
         public KontrAgent GetKontrAgentByInnName(int id, [FromBody]KontrAgent kontrAgent)
         {
-            KontrAgent foundKontrAgent = repo.FindByInnName(kontrAgent.Inn, kontrAgent.Name);
+            KontrAgent foundKontrAgent = repo.FindByInnName(kontrAgent.Inn, kontrAgent.Name, kontrAgent.Id);
             return foundKontrAgent;
         }
 
