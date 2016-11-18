@@ -14,23 +14,35 @@ namespace KontrAgentsApp.Controllers
     {
         KontrAgentRepository repo = new KontrAgentRepository();
 
+        //полчение всех контрагентов из БД
         public IEnumerable<KontrAgent> GetKontrAgents()
         {
             return repo.GetKontrAgents();
         }
 
+        //поиск контрагента по идентификатору
         public KontrAgent GetKontrAgent(int id)
         {
             KontrAgent kontrAgent = repo.Get(id);
             return kontrAgent;
         }
 
+        //поиск контрагента по ИНН и названию
+        [HttpPost]
+        public KontrAgent GetKontrAgentByInnName(int id, [FromBody]KontrAgent kontrAgent)
+        {
+            KontrAgent foundKontrAgent = repo.FindByInnName(kontrAgent.Inn, kontrAgent.Name);
+            return foundKontrAgent;
+        }
+
+        //добавление нового контрагента
         [HttpPost]
         public void CreateKontrAgent([FromBody]KontrAgent kontrAgent)
         {
             repo.Create(kontrAgent);
         }
 
+        //обновление данных контрагента
         [HttpPut]
         public void EditKontrAgent(int id, [FromBody]KontrAgent kontrAgent)
         {
@@ -40,6 +52,7 @@ namespace KontrAgentsApp.Controllers
             }
         }
 
+        //удаление контрагента по идентификатору
         public void DeleteKontrAgent(int id)
         {
             repo.Delete(id);

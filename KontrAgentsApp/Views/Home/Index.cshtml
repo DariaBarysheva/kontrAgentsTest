@@ -4,7 +4,7 @@
 
 <h3>Список контрагентов</h3>
 <div>
-    <button type="button" class="btn btn-primary pull-right" onclick="$('#modDialog').modal('show');">Добавить вручную</button>
+    <button type="button" class="btn btn-primary pull-right" id="newKontrAgent">Добавить вручную</button>
 </div>
 <br><br>
 <div id="modDialog" class="modal fade" role="dialog">
@@ -53,6 +53,12 @@
 
                     GetKontrAgents(); //получаем список контрагентов
 
+                    $("#newKontrAgent").click(function (event) {
+                        event.preventDefault();
+                        ChangeModalView("add"); //отображаем окно для добавления
+                        $('#modDialog').modal('show');
+                    });
+
                     $("#editKontrAgent").click(function (event) {
                         event.preventDefault();
                         EditKontrAgent(); //переходим к редактированию
@@ -65,19 +71,15 @@
 
                     $("#closeKontrAgent").click(function (event) {
                         event.preventDefault();
-                        CloseKontrAgent(); //закрываем модальное окно
+                        CloseModal(); //закрываем модальное окно
                     });
+
+                    
 
                 });
 
                 //получение всех контрагентов
                 function GetKontrAgents() {
-                    $("#createBlock").css('display', 'block'); //изначально скрываем блок редактирования, показваем только блок добавления
-                    $("#addKontrAgent").css('display', 'block');
-                    $("#editBlock").css('display', 'none');
-                    $("#editKontrAgent").css('display', 'none');
-
-
                     $.ajax({
                         url: '/api/kontragents',
                         type: 'GET',
@@ -157,10 +159,7 @@
                 //вывод данных редактируемого контрагента в поля для редактирования
                 function ShowKontrAgent(kontrAgent) {
                     if (kontrAgent != null) {                                          
-                        $("#createBlock").css('display', 'none'); //скрываем блок добавления и отображаем блок редактирования
-                        $("#addKontrAgent").css('display', 'none');
-                        $("#editBlock").css('display', 'block');
-                        $("#editKontrAgent").css('display', 'block');
+                        ChangeModalView("edit");
 
                         //выводим все данные на форму
                         $("#editId").val(kontrAgent.Id);
@@ -175,8 +174,6 @@
                     else {
                         alert("Такой контрагент не существует");
                     }
-
-
                 }
 
                 //добавление нового контрагента в базу путем нажатия "Сохранить" в карте контрагента  (в случае активности блока добавления)
@@ -191,13 +188,35 @@
                         BankCity: $('#addBankCity').val()
                     };
 
+                    //проверяем на наличие дубликата в БД
+                    $.ajax({
+                        url: '/api/kontragents/0',
+                        type: 'POST',
+                        data: JSON.stringify(kontrAgent),
+                        contentType: "application/json;charset=utf-8",
+                        success: function (data) {
+                            if (data == null || confirm("В БД найден дубликат введенного Вами контрагента по ИНН и названию (" + WriteFullKontrAgentName(data) + "). Все равно выполнить добавление?"))
+                            {
+                                CreateKontrAgent(kontrAgent);
+                            }                            
+                        },
+                        error: function (x, y, z) {
+                            alert(x + '\n' + y + '\n' + z);
+                        }
+                    });
+
+                    
+                }
+
+                //добавление контрагента в БД - в случае, если нет дубликатов или они проигнорированы
+                function CreateKontrAgent(kontrAgent) {
                     $.ajax({
                         url: '/api/kontragents',
                         type: 'POST',
                         data: JSON.stringify(kontrAgent),
                         contentType: "application/json;charset=utf-8",
                         success: function (data) {
-                            CloseKontrAgent(); //закрываем окно с картой контрагента
+                            CloseModal(); //закрываем окно с картой контрагента
                             GetKontrAgents(); //в случае успеха обновляем список
                         },
                         error: function (x, y, z) {
@@ -225,7 +244,7 @@
                         data: JSON.stringify(kontrAgent),
                         contentType: "application/json;charset=utf-8",
                         success: function (data) {
-                            CloseKontrAgent(); //закрываем окно с картой контрагента
+                            CloseModal(); //закрываем окно с картой контрагента
                             GetKontrAgents(); //в случае успеха обновляем список
                         },
                         error: function (x, y, z) {
@@ -235,7 +254,7 @@
                 }
 
                 //закрытие модального окна с картой контрагента - очищаем все поля и скрываем окно
-                function CloseKontrAgent() {
+                function CloseModal() {
                     $("#editId").val(0);
                     $("#editInn").val("");
                     $("#editAccount").val("");
@@ -250,6 +269,31 @@
                     $("#addBankCity").val("");
 
                     $('#modDialog').modal('hide');
+                }
+
+                //необходимые изменения во внешнем виде модального окна
+                function ChangeModalView(mode)
+                {
+                    if(mode == "add") //режим добавления
+                    {
+                        $("#createBlock").show(); //скрываем блок редактирования и отображаем блок добавления
+                        $("#addKontrAgent").show();
+                        $("#editBlock").hide();
+                        $("#editKontrAgent").hide();
+                    }
+                    else //режим редактирования
+                    {
+                        $("#createBlock").hide(); //скрываем блок добавления и отображаем блок редактирования
+                        $("#addKontrAgent").hide();
+                        $("#editBlock").show();
+                        $("#editKontrAgent").show();
+                    }
+                }
+
+                //форматированный вывод данных контрагента (используется при поиске дубликатов)
+                function WriteFullKontrAgentName(kontrAgent)
+                {
+                    return "ИНН " + kontrAgent.Inn + " " + kontrAgent.Name + " р/с " + kontrAgent.Account + " в " + kontrAgent.BankName + " " + kontrAgent.BankCity;
                 }
 
             </script>
