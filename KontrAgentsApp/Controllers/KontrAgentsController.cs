@@ -15,47 +15,93 @@ namespace KontrAgentsApp.Controllers
         KontrAgentRepository repo = new KontrAgentRepository();
 
         //полчение всех контрагентов из БД
-        public IEnumerable<KontrAgent> GetKontrAgents()
+        public IHttpActionResult GetKontrAgents()
         {
-            return repo.GetKontrAgents();
+            try
+            {
+                IEnumerable<KontrAgent> tempList = repo.GetKontrAgents();
+                return Ok(tempList);
+            }
+            catch(Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         //поиск контрагента по идентификатору
-        public KontrAgent GetKontrAgent(int id)
+        public IHttpActionResult GetKontrAgent(int id)
         {
-            KontrAgent kontrAgent = repo.Get(id);
-            return kontrAgent;
+            try
+            {
+                KontrAgent kontrAgent = repo.Get(id);
+                return Ok(kontrAgent);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         //поиск контрагента по ИНН и названию
         [HttpPost]
-        public KontrAgent GetKontrAgentByInnName(int id, [FromBody]KontrAgent kontrAgent)
+        public IHttpActionResult GetKontrAgentByInnName(int id, [FromBody]KontrAgent kontrAgent)
         {
-            KontrAgent foundKontrAgent = repo.FindByInnName(kontrAgent.Inn, kontrAgent.Name, kontrAgent.Id);
-            return foundKontrAgent;
+            try
+            {
+                KontrAgent foundKontrAgent = repo.FindByInnName(kontrAgent.Inn, kontrAgent.Name, kontrAgent.Id);
+                return Ok(foundKontrAgent);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         //добавление нового контрагента
         [HttpPost]
-        public void CreateKontrAgent([FromBody]KontrAgent kontrAgent)
+        public IHttpActionResult CreateKontrAgent([FromBody]KontrAgent kontrAgent)
         {
-            repo.Create(kontrAgent);
+            try
+            {
+                repo.Create(kontrAgent);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         //обновление данных контрагента
         [HttpPut]
-        public void EditKontrAgent(int id, [FromBody]KontrAgent kontrAgent)
+        public IHttpActionResult EditKontrAgent(int id, [FromBody]KontrAgent kontrAgent)
         {
-            if (id == kontrAgent.Id)
+            try
             {
-                repo.Update(kontrAgent);
+                if (id == kontrAgent.Id)
+                {
+                    repo.Update(kontrAgent);
+                }
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
             }
         }
 
         //удаление контрагента по идентификатору
-        public void DeleteKontrAgent(int id)
+        public IHttpActionResult DeleteKontrAgent(int id)
         {
-            repo.Delete(id);
+            try
+            {
+                repo.Delete(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
 

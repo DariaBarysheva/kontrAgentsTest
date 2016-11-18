@@ -195,7 +195,7 @@
                         data: JSON.stringify(kontrAgent),
                         contentType: "application/json;charset=utf-8",
                         success: function (data) {
-                            if (data == null || confirm("В БД найден дубликат введенного Вами контрагента по ИНН и названию (" + WriteFullKontrAgentName(data) + "). Все равно выполнить добавление?"))
+                            if (data == null || confirm("В БД найден дубликат введенного Вами контрагента по ИНН и названию (\n" + WriteFullKontrAgentName(data) + "\n). Все равно выполнить добавление?"))
                             {
                                 AddKontrAgentDB(kontrAgent);
                             }                            
@@ -243,7 +243,7 @@
                         data: JSON.stringify(kontrAgent),
                         contentType: "application/json;charset=utf-8",
                         success: function (data) {
-                            if (data == null || confirm("В БД найден дубликат введенного Вами контрагента по ИНН и названию (" + WriteFullKontrAgentName(data) + "). Все равно выполнить сохранение?")) {
+                            if (data == null || confirm("В БД найден дубликат введенного Вами контрагента по ИНН и названию (\n" + WriteFullKontrAgentName(data) + "\n). Все равно выполнить сохранение?")) {
                                 EditKontrAgentDB(kontrAgent);
                             }
                         },
@@ -311,7 +311,7 @@
                 //форматированный вывод данных контрагента (используется при поиске дубликатов)
                 function WriteFullKontrAgentName(kontrAgent)
                 {
-                    return "ИНН " + kontrAgent.Inn + " " + kontrAgent.Name + " р/с " + kontrAgent.Account + " в " + kontrAgent.BankName + " " + kontrAgent.BankCity;
+                    return  "Название: " + kontrAgent.Name + "\nИНН: " + kontrAgent.Inn + "\nР/с: " + kontrAgent.Account + "\nНазвание банка: " + kontrAgent.BankName + "\nГород банка: " + kontrAgent.BankCity;
                 }
 
             </script>
