@@ -58,19 +58,27 @@ namespace KontrAgentsApp.Controllers
                             else if (line.StartsWith("Получатель1="))
                             {
                                 tempKontrAgent.Name = line.Replace("Получатель1=", "");
+
+                                if (listKontrAgents.FirstOrDefault(v => v.Name == tempKontrAgent.Name && v.Inn == tempKontrAgent.Inn) != null)
+                                {
+                                    tempKontrAgent = null;
+                                }
                             }
-                            else if (line.StartsWith("Получатель2="))
+                            else if (tempKontrAgent != null)
                             {
-                                tempKontrAgent.Account = line.Replace("Получатель2=", "");
-                            }
-                            else if (line.StartsWith("Получатель3="))
-                            {
-                                tempKontrAgent.BankName = line.Replace("Получатель3=", "");
-                            }
-                            else if (line.StartsWith("Получатель4="))
-                            {
-                                tempKontrAgent.BankCity = line.Replace("Получатель4=", "");
-                                listKontrAgents.Add(tempKontrAgent);
+                                if (line.StartsWith("Получатель2="))
+                                {
+                                    tempKontrAgent.Account = line.Replace("Получатель2=", "");
+                                }
+                                else if (line.StartsWith("Получатель3="))
+                                {
+                                    tempKontrAgent.BankName = line.Replace("Получатель3=", "");
+                                }
+                                else if (line.StartsWith("Получатель4="))
+                                {
+                                    tempKontrAgent.BankCity = line.Replace("Получатель4=", "");
+                                    listKontrAgents.Add(tempKontrAgent);
+                                }
                             }
                         }
                     }

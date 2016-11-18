@@ -10,14 +10,14 @@ namespace KontrAgentsApp.Controllers
     {
         public ActionResult Index()
         {
-            ViewBag.Title = "Home Page";
+            ViewBag.Title = "Список контрагентов";
 
             return View();
         }
 
         public ActionResult Import()
         {
-            ViewBag.Title = "Import Page";
+            ViewBag.Title = "Импорт контрагентов";
 
             return View();
         }

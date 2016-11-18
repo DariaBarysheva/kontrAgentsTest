@@ -107,7 +107,7 @@
 
         //вывод полученных данных о контрагентах на экран в виде таблицы
         function WriteResponse(kontrAgents) {
-            var strResult = "<h3>Список контрагентов в файле</h3><table class='table table-striped'><th>№ п/п</th><th>Название</th><th>ИНН</th><th>Расчетный счет</th><th>Название банка</th><th>Город банка</th><th>Загружать в БД</th>";
+            var strResult = "<h3>Список уникальных контрагентов в файле</h3><table class='table table-striped'><th>№ п/п</th><th>Название</th><th>ИНН</th><th>Расчетный счет</th><th>Название банка</th><th>Город банка</th><th>Загружать в БД</th>";
             $.each(kontrAgents, function (index, kontrAgent) {
                 strResult += "<tr><td> " + (index + 1) + "</td><td>" + kontrAgent.Name + "</td><td>" +
                 kontrAgent.Inn + "</td><td>" + kontrAgent.Account + "</td><td>" + kontrAgent.BankName + "</td><td>" + kontrAgent.BankCity + "</td>" + 
