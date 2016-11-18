@@ -34,6 +34,17 @@ namespace KontrAgentsApp.Models
             return kontrAgent;
         }
 
+        //Получение одного контрагента по уникальному идентификатору
+        public KontrAgent FindByInnName(string inn, string name)
+        {
+            KontrAgent kontrAgent = null;
+            using (IDbConnection db = new SqlConnection(connectionString))
+            {
+                kontrAgent = db.Query<KontrAgent>("SELECT * FROM KontrAgents WHERE Inn = @inn AND Name = @name", new { inn, name }).FirstOrDefault();
+            }
+            return kontrAgent;
+        }
+
         //Добавление нового контрагента
         public KontrAgent Create(KontrAgent kontrAgent)
         {

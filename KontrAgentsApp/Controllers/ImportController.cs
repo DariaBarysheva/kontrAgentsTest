@@ -59,9 +59,17 @@ namespace KontrAgentsApp.Controllers
                             {
                                 tempKontrAgent.Name = line.Replace("Получатель1=", "");
 
+                                //если в списке из файла уже есть запись с такими ИНН и названием - не добавляем ее повторно
                                 if (listKontrAgents.FirstOrDefault(v => v.Name == tempKontrAgent.Name && v.Inn == tempKontrAgent.Inn) != null)
                                 {
                                     tempKontrAgent = null;
+                                }
+                                else //проверим еще на наличие дубликата в самой БД
+                                {
+                                    if(repo.FindByInnName(tempKontrAgent.Inn, tempKontrAgent.Name) != null)
+                                    {
+                                        tempKontrAgent.Id = -1;
+                                    }
                                 }
                             }
                             else if (tempKontrAgent != null)

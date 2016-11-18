@@ -84,7 +84,6 @@
                             success: function (result) {
                                 listKontrAgents = result; //заполняем глобальную переменную - список контрагентов из файла
                                 WriteResponse(result); //заполняем таблицу данными о контрагентах
-                                $('#uploadFile').prop('value', null); //очищаем поле с названием выбранного файла
                             },
                             error: function (xhr, status, p3) {
                                 alert(xhr.responseText);
@@ -107,10 +106,21 @@
 
         //вывод полученных данных о контрагентах на экран в виде таблицы
         function WriteResponse(kontrAgents) {
-            var strResult = "<h3>Список уникальных контрагентов в файле</h3><table class='table table-striped'><th>№ п/п</th><th>Название</th><th>ИНН</th><th>Расчетный счет</th><th>Название банка</th><th>Город банка</th><th>Загружать в БД</th>";
+            var strResult = "<h3>Список уникальных контрагентов в файле</h3><table class='table table-striped'><th>№ п/п</th><th>Название</th><th>ИНН</th>" + /*"<th>Расчетный счет</th><th>Название банка</th><th>Город банка</th>"*/ "<th>Примечание</th>" + "<th>Загружать в БД</th>";
+            var tempNote;
             $.each(kontrAgents, function (index, kontrAgent) {
-                strResult += "<tr><td> " + (index + 1) + "</td><td>" + kontrAgent.Name + "</td><td>" +
-                kontrAgent.Inn + "</td><td>" + kontrAgent.Account + "</td><td>" + kontrAgent.BankName + "</td><td>" + kontrAgent.BankCity + "</td>" + 
+                if (kontrAgent.Id == -1)
+                {
+                    tempNote = "найден дубликат в БД";
+                }
+                else
+                {
+                    tempNote = "";
+                }
+
+                strResult += "<tr><td> " + (index + 1) + "</td><td>" + kontrAgent.Name + "</td><td>" + kontrAgent.Inn + "</td>" +
+                /*"<td>" + kontrAgent.Account + "</td><td>" + kontrAgent.BankName + "</td><td>" + kontrAgent.BankCity + "</td>" +*/
+                "<td>" + tempNote + "</td>"+
                 "<td><input type='checkbox' checked id='checkBox" + index + "'/></td>" + "<td><a id='viewItem' onclick='ShowKontrAgent(" + index + ");' >Просмотреть</a></td>" +
                 "</tr>";
             });
@@ -174,7 +184,8 @@
                             data: JSON.stringify(tempArray),
                             contentType: "application/json;charset=utf-8",
                             success: function (data) {
-                            $("#tableBlock").html("");
+                                $("#tableBlock").html(""); //очищаем таблицу
+                                $('#uploadFile').prop('value', null); //очищаем поле с названием выбранного файла
                             },
                             error: function (x, y, z) {
                                 alert(x + '\n' + y + '\n' + z);
