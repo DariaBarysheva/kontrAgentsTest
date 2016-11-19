@@ -18,7 +18,7 @@
                 <form role="form" class="form-horizontal">
                     <div id="editBlock">
                         <div class="form-group"><input type="hidden" id="editId" /></div>
-                        <div class="form-group"><label class="control-label col-md-2" for="editName">Название: </label><div class="col-md-10"><input type="text" id="editName" class="form-control" required /></div></div>
+                        <div class="form-group"><label class="control-label col-md-2" for="editName">Название: </label><div class="col-md-10"><input type="text" id="editName" class="form-control" required/></div></div>
                         <div class="form-group"><label class="control-label col-md-2" for="editInn">ИНН: </label><div class="col-md-10"><input type="text" id="editInn" class="form-control" required /></div></div>
                         <div class="form-group"><label class="control-label col-md-2" for="editAccount">Расчетный счет: </label><div class="col-md-10"><input type="text" id="editAccount" class="form-control" required /></div></div>
                         <div class="form-group"><label class="control-label col-md-2" for="editBankName">Название банка: </label><div class="col-md-10"><input type="text" id="editBankName" class="form-control" required /></div></div>
@@ -72,10 +72,7 @@
                     $("#closeKontrAgent").click(function (event) {
                         event.preventDefault();
                         CloseModal(); //закрываем модальное окно
-                    });
-
-                    
-
+                    });                
                 });
 
                 //получение всех контрагентов
@@ -87,8 +84,8 @@
                         success: function (data) {
                             WriteResponse(data); //в случае успеха выводим таблицу с данными
                         },
-                        error: function (x, y, z) {
-                            alert(x + '\n' + y + '\n' + z);
+                        error: function (request, status, error) {
+                            alert(request.responseText + '\n' + status + '\n' + error);
                         }
                     });
                 }
@@ -127,8 +124,8 @@
                         success: function (data) {
                             GetKontrAgents(); //в случае успеха обновляем список
                         },
-                        error: function (x, y, z) {
-                            alert(x + '\n' + y + '\n' + z);
+                        error: function (request, status, error) {
+                            alert(request.responseText + '\n' + status + '\n' + error);
                         }
                     });
                 }
@@ -150,8 +147,8 @@
                         success: function (data) {
                             ShowKontrAgent(data); //в случае успеха выводим данные в карту контрагента
                         },
-                        error: function (x, y, z) {
-                            alert(x + '\n' + y + '\n' + z);
+                        error: function (request, status, error) {
+                            alert(request.responseText + '\n' + status + '\n' + error);
                         }
                     });
                 }
@@ -200,8 +197,8 @@
                                 AddKontrAgentDB(kontrAgent);
                             }                            
                         },
-                        error: function (x, y, z) {
-                            alert(x + '\n' + y + '\n' + z);
+                        error: function (request, status, error) {
+                            alert(request.responseText + '\n' + status + '\n' + error);
                         }
                     });                  
                 }
@@ -217,8 +214,8 @@
                             CloseModal(); //закрываем окно с картой контрагента
                             GetKontrAgents(); //в случае успеха обновляем список
                         },
-                        error: function (x, y, z) {
-                            alert(x + '\n' + y + '\n' + z);
+                        error: function (request, status, error) {
+                            alert(request.responseText + '\n' + status + '\n' + error);
                         }
                     });
                 }
@@ -236,6 +233,7 @@
                         BankName: $('#editBankName').val(),
                         BankCity: $('#editBankCity').val()
                     };
+
                     //проверяем на наличие дубликата в БД
                     $.ajax({
                         url: '/api/kontragents/0',
@@ -247,8 +245,8 @@
                                 EditKontrAgentDB(kontrAgent);
                             }
                         },
-                        error: function (x, y, z) {
-                            alert(x + '\n' + y + '\n' + z);
+                        error: function (request, status, error) {
+                            alert(request.responseText + '\n' + status + '\n' + error);
                         }
                     });                    
                 }
@@ -265,8 +263,8 @@
                             CloseModal(); //закрываем окно с картой контрагента
                             GetKontrAgents(); //в случае успеха обновляем список
                         },
-                        error: function (x, y, z) {
-                            alert(x + '\n' + y + '\n' + z);
+                        error: function (request, status, error) {
+                            alert(request.responseText + '\n' + status + '\n' + error);
                         }
                     });
                 }

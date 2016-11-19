@@ -97,8 +97,8 @@
                                 listKontrAgents = result; //заполняем глобальную переменную - список контрагентов из файла
                                 WriteResponse(result); //заполняем таблицу данными о контрагентах
                             },
-                            error: function (xhr, status, p3) {
-                                alert(xhr.responseText);
+                            error: function (request, status, error) {
+                                alert(request.responseText + '\n' + status + '\n' + error);
                             }
                         });
                     }
@@ -221,8 +221,8 @@
                                 $('#uploadFile').prop('value', null); //очищаем поле с названием выбранного файла
                                 ChangeDBElementsDisable(true); //установка доступности флажка и кнопки для загрузки в БД
                             },
-                            error: function (x, y, z) {
-                                alert(x + '\n' + y + '\n' + z);
+                            error: function (request, status, error) {
+                                alert(request.responseText + '\n' + status + '\n' + error);
                             }
                         });
                 }

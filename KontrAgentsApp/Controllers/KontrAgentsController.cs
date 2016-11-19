@@ -7,6 +7,8 @@ using System.Net.Http;
 using System.Web.Http;
 using KontrAgentsApp.Models;
 using System.Data;
+using System.Web;
+using System.Collections.Specialized;
 
 namespace KontrAgentsApp.Controllers
 {
