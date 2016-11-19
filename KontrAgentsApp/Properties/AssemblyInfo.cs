@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // набора атрибутов. Измените значения этих атрибутов для изменения сведений,
 // связанных с этой сборкой.
 [assembly: AssemblyTitle("KontrAgentsApp")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Тестовое задание. Реализация импорта контрагентов из файла в БД.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Hewlett-Packard")]
+[assembly: AssemblyCompany("Дарья Барышева")]
 [assembly: AssemblyProduct("KontrAgentsApp")]
-[assembly: AssemblyCopyright("© Hewlett-Packard, 2016")]
+[assembly: AssemblyCopyright("© Дарья Барышева, 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

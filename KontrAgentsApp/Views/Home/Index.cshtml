@@ -18,19 +18,19 @@
                 <form role="form" class="form-horizontal">
                     <div id="editBlock">
                         <div class="form-group"><input type="hidden" id="editId" /></div>
-                        <div class="form-group"><label class="control-label col-md-2" for="editName">Название: </label><div class="col-md-10"><input type="text" id="editName" class="form-control" required/></div></div>
-                        <div class="form-group"><label class="control-label col-md-2" for="editInn">ИНН: </label><div class="col-md-10"><input type="text" id="editInn" class="form-control" required /></div></div>
-                        <div class="form-group"><label class="control-label col-md-2" for="editAccount">Расчетный счет: </label><div class="col-md-10"><input type="text" id="editAccount" class="form-control" required /></div></div>
-                        <div class="form-group"><label class="control-label col-md-2" for="editBankName">Название банка: </label><div class="col-md-10"><input type="text" id="editBankName" class="form-control" required /></div></div>
-                        <div class="form-group"><label class="control-label col-md-2" for="editBankCity">Город банка: </label><div class="col-md-10"><input type="text" id="editBankCity" class="form-control" required /></div></div>
+                        <div class="form-group"><label class="control-label col-md-2" for="editName">Название: </label><div class="col-md-10"><input type="text" id="editName" class="form-control" /></div></div>
+                        <div class="form-group"><label class="control-label col-md-2" for="editInn">ИНН: </label><div class="col-md-10"><input type="text" id="editInn" class="form-control" /></div></div>
+                        <div class="form-group"><label class="control-label col-md-2" for="editAccount">Расчетный счет: </label><div class="col-md-10"><input type="text" id="editAccount" class="form-control" /></div></div>
+                        <div class="form-group"><label class="control-label col-md-2" for="editBankName">Название банка: </label><div class="col-md-10"><input type="text" id="editBankName" class="form-control" /></div></div>
+                        <div class="form-group"><label class="control-label col-md-2" for="editBankCity">Город банка: </label><div class="col-md-10"><input type="text" id="editBankCity" class="form-control" /></div></div>
                     </div>
                     <div id="createBlock">
-                        <div class="form-group"><label class="control-label col-md-2" for="addName">Название: </label><div class="col-md-10"><input type="text" id="addName" class="form-control" required /></div></div>
-                        <div class="form-group"><label class="control-label col-md-2" for="addInn">ИНН: </label><div class="col-md-10"><input type="text" id="addInn" class="form-control" required /></div></div>
-                        <div class="form-group"><label class="control-label col-md-2" for="addAccount">Расчетный счет: </label><div class="col-md-10"><input type="text" id="addAccount" class="form-control" required /></div></div>
-                        <div class="form-group"><label class="control-label col-md-2" for="addBankName">Название банка: </label><div class="col-md-10"><input type="text" id="addBankName" class="form-control" required /></div></div>
-                        <div class="form-group"><label class="control-label col-md-2" for="addBankCity">Город банка: </label><div class="col-md-10"><input type="text" id="addBankCity" class="form-control" required /></div></div>
-                    </div>
+                        <div class="form-group"><label class="control-label col-md-2" for="addName">Название: </label><div class="col-md-10"><input type="text" id="addName" class="form-control" /></div></div>
+                        <div class="form-group"><label class="control-label col-md-2" for="addInn">ИНН: </label><div class="col-md-10"><input type="text" id="addInn" class="form-control" /></div></div>
+                        <div class="form-group"><label class="control-label col-md-2" for="addAccount">Расчетный счет: </label><div class="col-md-10"><input type="text" id="addAccount" class="form-control" /></div></div>
+                        <div class="form-group"><label class="control-label col-md-2" for="addBankName">Название банка: </label><div class="col-md-10"><input type="text" id="addBankName" class="form-control" /></div></div>
+                        <div class="form-group"><label class="control-label col-md-2" for="addBankCity">Город банка: </label><div class="col-md-10"><input type="text" id="addBankCity" class="form-control" /></div></div>
+                    </div>                
                 </form>
             </div>
             <div class="modal-footer">
@@ -182,29 +182,34 @@
                     //получаем значения для добавляемого контрагента
                     var kontrAgent =
                     {
-                        Name: $('#addName').val(),
-                        Inn: $('#addInn').val(),
-                        Account: $('#addAccount').val(),
-                        BankName: $('#addBankName').val(),
-                        BankCity: $('#addBankCity').val()
+                        Name: $('#addName').val().trim(),
+                        Inn: $('#addInn').val().trim(),
+                        Account: $('#addAccount').val().trim(),
+                        BankName: $('#addBankName').val().trim(),
+                        BankCity: $('#addBankCity').val().trim()
                     };
 
-                    //проверяем на наличие дубликата в БД
-                    $.ajax({
-                        url: '/api/kontragents/0',
-                        type: 'POST',
-                        data: JSON.stringify(kontrAgent),
-                        contentType: "application/json;charset=utf-8",
-                        success: function (data) {
-                            if (data == null || confirm("В БД найден дубликат введенного Вами контрагента по ИНН и названию (\n" + WriteFullKontrAgentName(data) + "\n). Все равно выполнить добавление?"))
-                            {
-                                AddKontrAgentDB(kontrAgent);
-                            }                            
-                        },
-                        error: function (request, status, error) {
-                            alert(request.responseText + '\n' + status + '\n' + error);
-                        }
-                    });                  
+                    if (kontrAgent.Name == "" || kontrAgent.Inn == "" || kontrAgent.Account == "" ||
+                        kontrAgent.BankName == "" || kontrAgent.BankCity == "") {
+                        alert("Необходимо заполнить все данные на форме");
+                    }
+                    else {
+                        //проверяем на наличие дубликата в БД
+                        $.ajax({
+                            url: '/api/kontragents/0',
+                            type: 'POST',
+                            data: JSON.stringify(kontrAgent),
+                            contentType: "application/json;charset=utf-8",
+                            success: function (data) {
+                                if (data == null || confirm("В БД найден дубликат введенного Вами контрагента по ИНН и названию (\n" + WriteFullKontrAgentName(data) + "\n). Все равно выполнить добавление?")) {
+                                    AddKontrAgentDB(kontrAgent);
+                                }
+                            },
+                            error: function (request, status, error) {
+                                alert(request.responseText + '\n' + status + '\n' + error);
+                            }
+                        });
+                    }
                 }
 
                 //добавление контрагента в БД - в случае, если нет дубликатов или они проигнорированы
@@ -231,28 +236,34 @@
                     //получаем новые значения для редактируемого контрагента
                     var kontrAgent = {
                         Id: $('#editId').val(),
-                        Name: $('#editName').val(),
-                        Inn: $('#editInn').val(),
-                        Account: $('#editAccount').val(),
-                        BankName: $('#editBankName').val(),
-                        BankCity: $('#editBankCity').val()
+                        Name: $('#editName').val().trim(),
+                        Inn: $('#editInn').val().trim(),
+                        Account: $('#editAccount').val().trim(),
+                        BankName: $('#editBankName').val().trim(),
+                        BankCity: $('#editBankCity').val().trim()
                     };
 
-                    //проверяем на наличие дубликата в БД
-                    $.ajax({
-                        url: '/api/kontragents/0',
-                        type: 'POST',
-                        data: JSON.stringify(kontrAgent),
-                        contentType: "application/json;charset=utf-8",
-                        success: function (data) {
-                            if (data == null || confirm("В БД найден дубликат введенного Вами контрагента по ИНН и названию (\n" + WriteFullKontrAgentName(data) + "\n). Все равно выполнить сохранение?")) {
-                                EditKontrAgentDB(kontrAgent);
+                    if (kontrAgent.Name == "" || kontrAgent.Inn == "" || kontrAgent.Account == "" ||
+                       kontrAgent.BankName == "" || kontrAgent.BankCity == "") {
+                        alert("Необходимо заполнить все данные на форме");
+                    }
+                    else {
+                        //проверяем на наличие дубликата в БД
+                        $.ajax({
+                            url: '/api/kontragents/0',
+                            type: 'POST',
+                            data: JSON.stringify(kontrAgent),
+                            contentType: "application/json;charset=utf-8",
+                            success: function (data) {
+                                if (data == null || confirm("В БД найден дубликат введенного Вами контрагента по ИНН и названию (\n" + WriteFullKontrAgentName(data) + "\n). Все равно выполнить сохранение?")) {
+                                    EditKontrAgentDB(kontrAgent);
+                                }
+                            },
+                            error: function (request, status, error) {
+                                alert(request.responseText + '\n' + status + '\n' + error);
                             }
-                        },
-                        error: function (request, status, error) {
-                            alert(request.responseText + '\n' + status + '\n' + error);
-                        }
-                    });                    
+                        });
+                    }
                 }
 
                 //редактируем непосредственно в БД

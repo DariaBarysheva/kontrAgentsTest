@@ -16,7 +16,7 @@ namespace KontrAgentsApp.Controllers
     {
         KontrAgentRepository repo = new KontrAgentRepository();
 
-        //полчение всех контрагентов из БД
+        //получение всех контрагентов из БД
         public IHttpActionResult GetKontrAgents()
         {
             try
