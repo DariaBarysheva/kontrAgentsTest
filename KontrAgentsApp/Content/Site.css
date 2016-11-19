@@ -6,7 +6,15 @@
     padding-right: 20px;
 }
 
+@media screen and (min-width: 768px) {
+  .modal-lg{
+      width:900px;
+  }
 
+  .modal-sm{
+      width:300px;
+  }
+}
 
 
   

@@ -8,7 +8,7 @@
 </div>
 <br><br>
 <div id="modDialog" class="modal fade" role="dialog">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
@@ -72,7 +72,11 @@
                     $("#closeKontrAgent").click(function (event) {
                         event.preventDefault();
                         CloseModal(); //закрываем модальное окно
-                    });                
+                    });
+
+                    $('#modDialog').on('hidden.bs.modal', function () {
+                        $(this).find("input").val('').end(); //очищаем все поля ввода в модальном окне при его сокрытии 
+                    });
                 });
 
                 //получение всех контрагентов
@@ -269,21 +273,8 @@
                     });
                 }
 
-                //закрытие модального окна с картой контрагента - очищаем все поля и скрываем окно
+                //закрытие модального окна с картой контрагента 
                 function CloseModal() {
-                    $("#editId").val(0);
-                    $("#editInn").val("");
-                    $("#editAccount").val("");
-                    $("#editName").val("");
-                    $("#editBankName").val("");
-                    $("#editBankCity").val("");
-
-                    $("#addInn").val("");
-                    $("#addAccount").val("");
-                    $("#addName").val("");
-                    $("#addBankName").val("");
-                    $("#addBankCity").val("");
-
                     $('#modDialog').modal('hide');
                 }
 
