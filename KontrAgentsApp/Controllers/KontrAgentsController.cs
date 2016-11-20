@@ -12,6 +12,7 @@ using System.Collections.Specialized;
 
 namespace KontrAgentsApp.Controllers
 {
+    //контроллер для главной страницы
     public class KontrAgentsController : ApiController
     {
         KontrAgentRepository repo = new KontrAgentRepository();
@@ -108,63 +109,5 @@ namespace KontrAgentsApp.Controllers
                 return InternalServerError(ex);
             }
         }
-
-
-        /*public ActionResult Index()
-        {
-            return View(repo.GetKontrAgents());
-        }
-
-        public ActionResult Details(int id)
-        {
-            KontrAgent kontrAgent = repo.Get(id);
-            if (kontrAgent != null)
-                return View(kontrAgent);
-            return HttpNotFound();
-        }
-
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public ActionResult Create(KontrAgent kontrAgent)
-        {
-            repo.Create(kontrAgent);
-            return RedirectToAction("Index");
-        }
-
-        public ActionResult Edit(int id)
-        {
-            KontrAgent kontrAgent = repo.Get(id);
-            if (kontrAgent != null)
-                return View(kontrAgent);
-            return HttpNotFound();
-        }
-
-        [HttpPost]
-        public ActionResult Edit(KontrAgent kontrAgent)
-        {
-            repo.Update(kontrAgent);
-            return RedirectToAction("Index");
-        }
-
-        [HttpGet]
-        [ActionName("Delete")]
-        public ActionResult ConfirmDelete(int id)
-        {
-            KontrAgent kontrAgent = repo.Get(id);
-            if (kontrAgent != null)
-                return View(kontrAgent);
-            return HttpNotFound();
-        }
-        [HttpPost]
-        public ActionResult Delete(int id)
-        {
-            repo.Delete(id);
-            return RedirectToAction("Index");
-        }*/
-
     }
 }

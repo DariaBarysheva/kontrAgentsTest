@@ -10,10 +10,10 @@
         </div>  
         <div class="form-group">
             <input type="checkbox" id="checkBoxDubles"/>
-            <label>Добавлять в БД найденные дубликаты</label>
+            <label>Выгружать найденные дубликаты (для обновления в БД ранее созданных записей)</label>
             <div class="btn-group pull-right">
                 <button type="button" class="btn btn-primary" id="submit">Вывести данные из файла</button>
-                <button type="button" class="btn btn-default" id="addToDB">Добавить отмеченных контрагентов в БД</button>
+                <button type="button" class="btn btn-default" id="addToDB">Загрузить отмеченных контрагентов в БД</button>
             </div>
         </div>
 </form>
@@ -71,7 +71,11 @@
             $("#checkBoxDubles").change(function (event) {
                 event.preventDefault();
                 ChangeDublesChecked(this.checked); //устанавливаем отметку о выгрузке для найденных дубликатов
-            });           
+            });
+
+            $('#modDialog').on('hidden.bs.modal', function () {
+                $(this).find("input").val('').end(); //очищаем все поля ввода в модальном окне при его сокрытии 
+            });
         });
 
         //отправка файла на сервер и парсинг контрагентов из файла
@@ -117,11 +121,11 @@
 
         //вывод полученных данных о контрагентах на экран в виде таблицы
         function WriteResponse(kontrAgents) {
-            var strResult = "<h3>Список уникальных контрагентов в файле</h3><table class='table table-striped'><th>№</th><th>Название</th><th>ИНН</th>" + /*"<th>Расчетный счет</th><th>Название банка</th><th>Город банка</th>"*/ "<th>Дубликат в БД по ИНН и названию</th>" + "<th>Добавлять в БД</th><th></th>";
+            var strResult = "<h3>Список уникальных контрагентов в файле</h3><table class='table table-striped'><th>№</th><th>Название</th><th>ИНН</th>" + /*"<th>Расчетный счет</th><th>Название банка</th><th>Город банка</th>"*/ "<th>Дубликат в БД по ИНН и названию</th>" + "<th>Загружать в БД</th><th></th>";
             var tempNote;
             var tempChecked;
             $.each(kontrAgents, function (index, kontrAgent) {
-                if (kontrAgent.Id == -1)
+                if (kontrAgent.Id != 0) //значит, найден дубликат - сообщаем об этом и по умолчанию не ставим отметку о загрузке в БД
                 {
                     tempNote = "найден";
                     tempChecked = "";
@@ -155,14 +159,8 @@
             $('#modDialog').modal('show');
         }
 
-        //закрытие модального окна с картой контрагента - очищаем все поля и скрываем окно
+        //закрытие модального окна с картой контрагента - скрываем окно
         function CloseKontrAgent() {
-            $("#viewInn").val("");
-            $("#viewAccount").val("");
-            $("#viewName").val("");
-            $("#viewBankName").val("");
-            $("#viewBankCity").val("");
-
             $('#modDialog').modal('hide');
         }
 
@@ -170,7 +168,7 @@
         function ChangeDublesChecked(newChecked){
             //проходим по глобально определенному списку загруженных из файла записей
             $.each(listKontrAgents, function (index, kontrAgent) {
-                if (kontrAgent.Id == -1) //найден дубликат в БД - устанавливаем новое значение отметки "Выгружать в БД"
+                if (kontrAgent.Id != 0) //найден дубликат в БД - устанавливаем новое значение отметки "Выгружать в БД"
                 {
                     $("#checkBox" + index).prop("checked", newChecked);
                 }
@@ -196,6 +194,7 @@
                     //если запись отмечена флажком - добавляем в БД
                     if ($("#checkBox" + index).prop("checked") == true) {                        
                         tempArray[checkedCount++] = {
+                            Id: kontrAgent.Id,
                             Name: kontrAgent.Name,
                             Inn: kontrAgent.Inn,
                             Account: kontrAgent.Account,
@@ -211,11 +210,12 @@
                 else //отправляем отмеченные строки на сервер
                 {
                     $.ajax({
-                            url: '/api/import/1',
+                            url: '/api/import/createkontragent',
                             type: 'POST',
                             data: JSON.stringify(tempArray),
                             contentType: "application/json;charset=utf-8",
                             success: function (data) {
+                                alert(data);
                                 $("#tableBlock").html(""); //очищаем таблицу                                
                                 $('#uploadFile').prop('value', null); //очищаем поле с названием выбранного файла
                                 ChangeDBElementsDisable(true); //установка доступности флажка и кнопки для загрузки в БД

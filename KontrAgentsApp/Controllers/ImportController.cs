@@ -11,15 +11,18 @@ using KontrAgentsApp.Models;
 
 namespace KontrAgentsApp.Controllers
 {
+    //контроллер для страницы "Импорт контрагентов"
     public class ImportController : ApiController
     {
         KontrAgentRepository repo = new KontrAgentRepository(); 
 
+        //получение с клиента файла с контрагентами, парсинг файла и возврат списка найденных записей
         public async Task<IHttpActionResult> Post()
         {
             string line; //для хранения одной строки, прочитанной из файла
             List<KontrAgent> listKontrAgents = new List<KontrAgent>(); ; //для хранения списка контрагентов, прочитанных из файла
             KontrAgent tempKontrAgent = null; //для хранения текущего контрагента, прочитанного из файла
+            KontrAgent dubl = null; //для хранения данных о дубликате в БД для записи в файле
 
             try
             {
@@ -52,13 +55,13 @@ namespace KontrAgentsApp.Controllers
                             if (line.StartsWith("ПолучательИНН="))
                             {
                                 tempKontrAgent = new KontrAgent();
-                                tempKontrAgent.Inn = line.Replace("ПолучательИНН=", "");
+                                tempKontrAgent.Inn = line.Replace("ПолучательИНН=", "").Trim();
                             }
                             else if (tempKontrAgent != null)
                             {
                                 if (line.StartsWith("Получатель1="))
                                 {
-                                    tempKontrAgent.Name = line.Replace("Получатель1=", "");
+                                    tempKontrAgent.Name = line.Replace("Получатель1=", "").Trim();
 
                                     //если в списке из файла уже есть запись с такими ИНН и названием - не добавляем ее повторно
                                     if (listKontrAgents.FirstOrDefault(v => v.Name == tempKontrAgent.Name && v.Inn == tempKontrAgent.Inn) != null)
@@ -67,23 +70,23 @@ namespace KontrAgentsApp.Controllers
                                     }
                                     else //проверим еще на наличие дубликата в самой БД
                                     {
-                                        if (repo.FindByInnName(tempKontrAgent.Inn, tempKontrAgent.Name, tempKontrAgent.Id) != null)
+                                        if ((dubl = repo.FindByInnName(tempKontrAgent.Inn, tempKontrAgent.Name, tempKontrAgent.Id)) != null)
                                         {
-                                            tempKontrAgent.Id = -1;
+                                            tempKontrAgent.Id = dubl.Id; //если есть дубликат - вернем его ID на случай, если пользователь захочет обновить ранее добавленную запись в БД
                                         }
                                     }
                                 }
                                 else if (line.StartsWith("Получатель2="))
                                 {
-                                    tempKontrAgent.Account = line.Replace("Получатель2=", "");
+                                    tempKontrAgent.Account = line.Replace("Получатель2=", "").Trim();
                                 }
                                 else if (line.StartsWith("Получатель3="))
                                 {
-                                    tempKontrAgent.BankName = line.Replace("Получатель3=", "");
+                                    tempKontrAgent.BankName = line.Replace("Получатель3=", "").Trim();
                                 }
                                 else if (line.StartsWith("Получатель4="))
                                 {
-                                    tempKontrAgent.BankCity = line.Replace("Получатель4=", "");
+                                    tempKontrAgent.BankCity = line.Replace("Получатель4=", "").Trim();
                                     listKontrAgents.Add(tempKontrAgent);
                                 }
                             }
@@ -101,15 +104,28 @@ namespace KontrAgentsApp.Controllers
 
         //добавление в БД списка выбранных из файла пользователем контрагентов 
         [HttpPost]
-        public IHttpActionResult CreateKontrAgent(int id, [FromBody]IEnumerable<KontrAgent> tempListKontrAgents)
+        //требуется указать ограничения на маршрут, применимый к данному методу, т.к. два метода POST без параметров
+        [Route("api/import/createkontragent")]
+        public IHttpActionResult CreateKontrAgent([FromBody]IEnumerable<KontrAgent> tempListKontrAgents)
         {
+            int editCount = 0; //для подсчета обновленных записей
+            int addCount = 0; //для подсчета добавленных записей
             try
             {
                 foreach (KontrAgent kontrAgent in tempListKontrAgents)
                 {
-                    repo.Create(kontrAgent);
+                    if (kontrAgent.Id != 0) //нужно обновить запись
+                    {
+                        repo.Update(kontrAgent);
+                        editCount++;
+                    }
+                    else //нужно добавить запись
+                    {
+                        repo.Create(kontrAgent);
+                        addCount++;
+                    }
                 }
-                return Ok();
+                return Ok("Операция загрузки выполнена успешно. В процессе загрузки было создано " + addCount.ToString() + " записей и обновлено " + editCount.ToString() + " записей");
             }
             catch(Exception ex)
             {
