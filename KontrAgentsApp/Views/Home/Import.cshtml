@@ -6,7 +6,7 @@
 <div>
     <form role="form">
         <div class="form-group">
-            <input type="file" class ="form-control" id="uploadFile" accept="text/plain"/>     
+            <input type="file" class ="form-control" id="uploadFile" accept="text/plain"/>  
         </div>  
         <div class="form-group">
             <input type="checkbox" id="checkBoxDubles"/>
@@ -71,8 +71,7 @@
             $("#checkBoxDubles").change(function (event) {
                 event.preventDefault();
                 ChangeDublesChecked(this.checked); //устанавливаем отметку о выгрузке для найденных дубликатов
-            });
-
+            });           
         });
 
         //отправка файла на сервер и парсинг контрагентов из файла

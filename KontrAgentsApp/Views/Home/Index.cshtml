@@ -196,14 +196,25 @@
                     else {
                         //проверяем на наличие дубликата в БД
                         $.ajax({
-                            url: '/api/kontragents/0',
+                            /*url: '/api/kontragents/0',
                             type: 'POST',
                             data: JSON.stringify(kontrAgent),
-                            contentType: "application/json;charset=utf-8",
+                            contentType: "application/json;charset=utf-8",*/
+
+                            url: '/api/kontragents/getkontragentbyinnname',
+                            type: 'GET',
+                            data: kontrAgent,
+                            dataType: 'json',
+
                             success: function (data) {
-                                if (data == null || confirm("В БД найден дубликат введенного Вами контрагента по ИНН и названию (\n" + WriteFullKontrAgentName(data) + "\n). Все равно выполнить добавление?")) {
+                                if (data == null)                                    
+                                {
                                     AddKontrAgentDB(kontrAgent);
                                 }
+                                else
+                                {
+                                    alert("В БД найден дубликат введенного Вами контрагента по ИНН и названию (\n" + WriteFullKontrAgentName(data) + "\n). Добавление невозможно. При необходимости изменения данных, пожалуйста, редактируйте исходную запись");
+                                }                                
                             },
                             error: function (request, status, error) {
                                 alert(request.responseText + '\n' + status + '\n' + error);
@@ -250,13 +261,24 @@
                     else {
                         //проверяем на наличие дубликата в БД
                         $.ajax({
-                            url: '/api/kontragents/0',
+                            /*url: '/api/kontragents/0',
                             type: 'POST',
                             data: JSON.stringify(kontrAgent),
-                            contentType: "application/json;charset=utf-8",
+                            contentType: "application/json;charset=utf-8",*/
+                            
+                            url: '/api/kontragents/getkontragentbyinnname',
+                            type: 'GET',
+                            data: kontrAgent,
+                            dataType: 'json',
+
                             success: function (data) {
-                                if (data == null || confirm("В БД найден дубликат введенного Вами контрагента по ИНН и названию (\n" + WriteFullKontrAgentName(data) + "\n). Все равно выполнить сохранение?")) {
+                                if (data == null) 
+                                {
                                     EditKontrAgentDB(kontrAgent);
+                                }
+                                else
+                                {
+                                    alert("В БД найден дубликат введенного Вами контрагента по ИНН и названию (\n" + WriteFullKontrAgentName(data) + "\n). При необходимости изменения данных, пожалуйста, редактируйте исходную запись")
                                 }
                             },
                             error: function (request, status, error) {

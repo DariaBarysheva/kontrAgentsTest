@@ -45,8 +45,11 @@ namespace KontrAgentsApp.Controllers
         }
 
         //поиск контрагента по ИНН и названию
-        [HttpPost]
-        public IHttpActionResult GetKontrAgentByInnName(int id, [FromBody]KontrAgent kontrAgent)
+        /*[HttpPost]
+        public IHttpActionResult GetKontrAgentByInnName(int id, [FromBody]KontrAgent kontrAgent)*/
+        //требуется указать ограничение, какой маршрут применим к данному методу; иначе будет ошибка при вызове GET api/kontragents
+        [Route("api/kontragents/getkontragentbyinnname")]
+        public IHttpActionResult GetKontrAgentByInnName([FromUri]KontrAgent kontrAgent)
         {
             try
             {
