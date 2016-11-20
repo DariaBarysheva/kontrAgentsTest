@@ -124,15 +124,17 @@
             var strResult = "<h3>Список уникальных контрагентов в файле</h3><table class='table table-striped'><th>№</th><th>Название</th><th>ИНН</th>" + /*"<th>Расчетный счет</th><th>Название банка</th><th>Город банка</th>"*/ "<th>Дубликат в БД по ИНН и названию</th>" + "<th>Загружать в БД</th><th></th>";
             var tempNote;
             var tempChecked;
+            var oneDubl = false;
             $.each(kontrAgents, function (index, kontrAgent) {
                 if (kontrAgent.Id != 0) //значит, найден дубликат - сообщаем об этом и по умолчанию не ставим отметку о загрузке в БД
                 {
                     tempNote = "найден";
                     tempChecked = "";
+                    oneDubl = true;
                 }
                 else
                 {
-                    tempNote = "";
+                    tempNote = "-";
                     tempChecked = " checked ";
                 }
 
@@ -145,6 +147,11 @@
             strResult += "</table>";
 
             $("#tableBlock").html(strResult);
+
+            if(!oneDubl) //если нет дубликатов - не нужно делать доступным флажок для их массового выделения 
+            {
+                $("#checkBoxDubles").prop('disabled', true);
+            }
         }
 
         //обработчик выбора просмотра напротив контрагента в таблице
