@@ -10,7 +10,7 @@
         </div>  
         <div class="form-group">
             <input type="checkbox" id="checkBoxDubles"/>
-            <label>Выгружать найденные дубликаты (для обновления в БД ранее созданных записей)</label>
+            <label>Загружать найденные дубликаты (для обновления в БД ранее созданных записей)</label>
             <div class="btn-group pull-right">
                 <button type="button" class="btn btn-primary" id="submit">Вывести данные из файла</button>
                 <button type="button" class="btn btn-default" id="addToDB">Загрузить отмеченных контрагентов в БД</button>
@@ -225,6 +225,7 @@
                                 alert(data);
                                 $("#tableBlock").html(""); //очищаем таблицу                                
                                 $('#uploadFile').prop('value', null); //очищаем поле с названием выбранного файла
+                                $('#checkBoxDubles').prop('checked', false); //флажок по умолчанию сброшен
                                 ChangeDBElementsDisable(true); //установка доступности флажка и кнопки для загрузки в БД
                             },
                             error: function (request, status, error) {
