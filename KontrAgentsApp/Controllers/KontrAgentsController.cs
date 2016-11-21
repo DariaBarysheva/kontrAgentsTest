@@ -45,9 +45,11 @@ namespace KontrAgentsApp.Controllers
             }
         }
 
-        //поиск контрагента по ИНН и названию
+
         /*[HttpPost]
         public IHttpActionResult GetKontrAgentByInnName(int id, [FromBody]KontrAgent kontrAgent)*/
+
+        //поиск контрагента по ИНН и названию    
         //требуется указать ограничение, какой маршрут применим к данному методу; иначе будет ошибка при вызове GET api/kontragents
         [Route("api/kontragents/getkontragentbyinnname")]
         public IHttpActionResult GetKontrAgentByInnName([FromUri]KontrAgent kontrAgent)
@@ -88,6 +90,7 @@ namespace KontrAgentsApp.Controllers
                 {
                     repo.Update(kontrAgent);
                 }
+                else throw new Exception("Идентификатор объекта в адресной строке не совпадает с идентификатором объекта, переданного в теле запроса. Обновление не будет выполнено");
                 return Ok();
             }
             catch (Exception ex)

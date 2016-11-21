@@ -122,9 +122,9 @@
         //вывод полученных данных о контрагентах на экран в виде таблицы
         function WriteResponse(kontrAgents) {
             var strResult = "<h3>Список уникальных контрагентов в файле</h3><table class='table table-striped'><th>№</th><th>Название</th><th>ИНН</th>" + /*"<th>Расчетный счет</th><th>Название банка</th><th>Город банка</th>"*/ "<th>Дубликат в БД по ИНН и названию</th>" + "<th>Загружать в БД</th><th></th>";
-            var tempNote;
-            var tempChecked;
-            var oneDubl = false;
+            var tempNote; //для вывода сообщения о наличии дубликата в БД
+            var tempChecked; //для вывода отметки о необходимости загрузки в БД
+            var oneDubl = false; //есть ли хотя бы один дубликат
             $.each(kontrAgents, function (index, kontrAgent) {
                 if (kontrAgent.Id != 0) //значит, найден дубликат - сообщаем об этом и по умолчанию не ставим отметку о загрузке в БД
                 {
@@ -193,8 +193,8 @@
         function AddKontrAgents() {
             //список из файла загружен
             if (typeof listKontrAgents != "undefined") {
-                var checkedCount = 0;
-                var tempArray = [];
+                var checkedCount = 0; //число отмеченных для загрузки в Бд записей
+                var tempArray = []; //массив для хранения только отмеченных в таблице записей
                 
                 //проходим по глобально определенному списку загруженных из файла записей
                 $.each(listKontrAgents, function (index, kontrAgent) {

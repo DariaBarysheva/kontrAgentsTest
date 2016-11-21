@@ -12,6 +12,7 @@ namespace KontrAgentsApp.Models
     public class KontrAgentRepository
     {
         string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+
         //Извлечение данных о контрагентах из БД
         public List<KontrAgent> GetKontrAgents()
         {
