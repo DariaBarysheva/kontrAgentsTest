@@ -34,7 +34,7 @@ namespace KontrAgentsApp.Models
             return kontrAgent;
         }
 
-        //Получение одного контрагента по уникальному идентификатору
+        //Попытка найти дубликат контрагента по ИНН и названию (id при этом должны быть разными)
         public KontrAgent FindByInnName(string inn, string name, int id)
         {
             KontrAgent kontrAgent = null;
